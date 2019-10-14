@@ -10,7 +10,7 @@ injonctions["sing"] = function(){
 injonctions["go to sleep"] = function(){
 	setTimeout(
 		function(){
-			Bot.disconnect();
+			Client.disconnect();
 			process.exit();
 		},
 		500

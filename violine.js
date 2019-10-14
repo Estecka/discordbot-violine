@@ -8,8 +8,8 @@ Violine.commands = {};
 Violine.initialize = function(){
 	try {
 		Violine.mentions = [
-			"<@"+Bot.id+">",
-			"<@!"+Bot.id+">"
+			"<@"+Client.id+">",
+			"<@!"+Client.id+">"
 		];
 
 		Violine.reloadAll();
@@ -21,6 +21,11 @@ Violine.initialize = function(){
 	}
 };
 
+
+/**
+ * Splits a string into words.
+ * @param {*} message 
+ */
 Violine.parse = function(message){
 	message = message.split(' ');
 	for (var i=0; i<message.length; i++){
@@ -32,32 +37,6 @@ Violine.parse = function(message){
 	return message;
 };
 
-
-/*Violine.process = function(param, channel){
-	try {
-		cmd = Violine.commands;
-		while (param.length>0 && cmd.call === undefined){
-			if (cmd[param[0]] != undefined)
-				cmd = cmd[param.shift()];
-			else
-				return 0;
-		}
-		
-		if (cmd.call !== undefined){
-			return cmd.call(param);
-		}
-
-	}catch(e){
-		console.error(e);
-		return {
-			embed : {
-				color: 0xff2200,
-				description: "Command failed to execute"
-			}
-		};
-	}
-};/**/
-
 Violine.Send = function(messages, channel){
 	if (!Array.isArray(messages))
 		messages = [messages];
@@ -65,14 +44,14 @@ Violine.Send = function(messages, channel){
 	if (channel)
 		msg.to = channel;
 
-	Bot.sendMessage(msg, (error, response)=>{
+	Client.sendMessage(msg, (error, response)=>{
 		if (messages.length>0)
 			setTimeout(()=>Violine.Send(messages, channel), 1000);
 		if (error){
 			console.warn("Message caused an error : ");
 			console.warn(msg);
 			console.warn(error);
-			Bot.sendMessage({
+			Client.sendMessage({
 				to: msg.to,
 				embed: {
 					color: 0xff8800,
@@ -83,6 +62,10 @@ Violine.Send = function(messages, channel){
 	})
 };
 
+/**
+ * Load/Reload a given module.
+ * @param {*} moduleName 
+ */
 Violine.reload = function(moduleName){
 	let path = "./violine_commands/"+moduleName+".js"
 	console.log("Loading "+path);
@@ -98,6 +81,9 @@ Violine.reload = function(moduleName){
 	}
 };
 
+/**
+ * Load/Reload all modules and config.
+ */
 Violine.reloadAll = function(){
 	console.log("Reloading...");
 	try {
@@ -109,7 +95,7 @@ Violine.reloadAll = function(){
 		return Reply.Failure(null, "Error in config file");
 	}
 
-	Bot.setPresence({
+	Client.setPresence({
 		game:{
 			name: Violine.config.game
 		}

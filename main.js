@@ -1,3 +1,4 @@
+// Cause any uncaught error to be displayed on the console window for 5mn.
 process.on("uncaughtException", function(err){
     console.log("\n /!\\ FATAL ERROR /!\\ \n Shutting down in 5mn\n");
     console.log(err);
@@ -6,17 +7,8 @@ process.on("uncaughtException", function(err){
         300000
     );
 });
-/*
-for(var i=0; i<10; i++){
-	let time=0;
-	setTimeout(
-		function(){console.log(i);},
-		time
-	);
-	time+= 1000;
-}
-*/
 
+// Adds the root path to the module listing
 module.paths.push("/");
 
 var Discord = require('discord.io');
@@ -31,9 +23,9 @@ logger.add(new logger.transports.Console, {
 });
 logger.level = 'debug';
 
-// Initialize Discord Bot
-var Bot =
-global.Bot = new Discord.Client({
+// Initialize Discord Client
+var Client =
+global.Client = new Discord.Client({
    token: auth.token,
    autorun: true
 });
@@ -43,17 +35,17 @@ global.Violine = require('./violine.js');
 
 
 // -- READY --
-Bot.on('ready', function (evt) {
+Client.on('ready', function (evt) {
     console.log("Connected");
-    console.log("Logged in as : "+Bot.username+" ("+Bot.id+")");
+    console.log("Logged in as : "+Client.username+" ("+Client.id+")");
 
     Violine.initialize();
 });
 
 
 // -- MESSSAGE --
-Bot.on('message', function (user, userID, channelID, message, evt) {
-    if (userID == Bot.id) // Ignore own messages
+Client.on('message', function (user, userID, channelID, message, evt) {
+    if (userID == Client.id) // Ignore own messages
         return;
     var result = 0;
     var words = Violine.parse(message);
@@ -83,14 +75,21 @@ Bot.on('message', function (user, userID, channelID, message, evt) {
         }
     }
 
+	// This methods needs to be taken out of here.
+	/**
+	 * Prepares a message content to be sent onto Discord.
+	 * @param {*} msg The message object 
+	 * @param {*} channel The channel id the message will be sent to.
+	 * @param {*} type Should Violine simulate typing.
+	 */
     let stampMsg = function(msg, channel, type=false){
         msg.to = channel;
         console.log (msg);
 
-        Bot.sendMessage(msg, function(error, response){
+        Client.sendMessage(msg, function(error, response){
             if (error) {
                 console.warn(error)
-                Bot.sendMessage({
+                Client.sendMessage({
                     to: channel,
                     embed:{
                         color: 0xff8800,
@@ -117,8 +116,9 @@ Bot.on('message', function (user, userID, channelID, message, evt) {
             //stampMsg(result, channelID);
         console.log('');
     }
+	// If no command are triggered, hums to your name.
     else if(words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {
-        Bot.sendMessage({
+        Client.sendMessage({
             to: channelID,
             message: "♪"
         });
