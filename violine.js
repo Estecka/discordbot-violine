@@ -1,10 +1,77 @@
 var Reply = require("./messages.js");
+var Config = require("./config.json");
 var fs = require("fs");
 
-global.Violine = {};
-Violine.config = require("./config.json");
+/**
+ * @typedef {object} ShiftedParams
+ * @property {string} current The value of the current parameter.
+ * @property {string} remaining The remaining parameters.
+ */
+
+/**
+  * Checks whether a given character is a whitespace
+  * @param {character} char 
+  * @returns {boolean} True if `char` is a whitespace
+  */
+function IsWhitespace(char) {
+	return " \t\n\r\v\f".indexOf(char) > 0;
+}
+
+var Violine = {
+	/**
+	 * Processes a message 
+	 * @param {string} sender The ID of the sender
+	 * @param {string} message The body of the message
+	 * @return {object} The answer, or a series of answer.
+	 */
+	ProcessMessage: function(sender, message) {},
+
+	/**
+	 * Gets the next parameter from the given string.
+	 * @param {string} message The full input command.
+	 * @returns {ShiftedParams}
+	 */
+	ShiftParams: function(message){
+		let result = {};
+		let length = message.length;
+		let limit = 0;
+
+		for (let i=0; i<length; i++) {
+			if (IsWhitespace(message[i])) {
+				limit = i;
+				break;
+			}
+		}
+		result.value = message.substring(0, limit);
+		limit++;
+		for (let i=limit; i<length; i++){
+			if (!IsWhitespace(message[i])){
+				limit = i;
+				break;
+			}
+		}
+		if (limit < length)
+			result.remaining = message.substring(limit);
+		else
+			result.remaining = "";
+		return result;
+	},
+
+	/**
+	 * Separates a string into parameters at every whitespace.
+	 * @param {*} parameter 
+	 * @return {string[]} An array of words.
+	 */
+	SplitsParameters: function(parameter){
+		return parameter.match(/\S+/g) || [];
+	},
+};
+Violine.config = Config;
 Violine.legacyCommands = {};
 
+// --------------
+// Legacy methods
+// --------------
 Violine.initialize = function(){
 	try {
 		Violine.mentions = [
@@ -112,4 +179,5 @@ Violine.reloadAllLegacy = function(){
 	return result;
 };
 
+global.Violine = Violine;
 module.exports = Violine;
