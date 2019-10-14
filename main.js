@@ -52,8 +52,8 @@ Client.on('message', function (user, userID, channelID, message, evt) {
     var cmdName = words[0];
     var params = words.slice(1);
 
-    for (var i in Violine.commands){
-        let cmd = Violine.commands[i][cmdName];
+    for (var i in Violine.legacyCommands){
+        let cmd = Violine.legacyCommands[i][cmdName];
         if (cmd){
 
             if (cmd._admin && !Violine.config.admins.includes(userID))

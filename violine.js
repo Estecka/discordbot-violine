@@ -3,7 +3,7 @@ var fs = require("fs");
 
 global.Violine = {};
 Violine.config = require("./config.json");
-Violine.commands = {};
+Violine.legacyCommands = {};
 
 Violine.initialize = function(){
 	try {
@@ -12,7 +12,7 @@ Violine.initialize = function(){
 			"<@!"+Client.id+">"
 		];
 
-		Violine.reloadAll();
+		Violine.reloadAllLegacy();
 		
 	}catch(err){
 		console.error("Initialization Failed");
@@ -66,12 +66,12 @@ Violine.Send = function(messages, channel){
  * Load/Reload a given module.
  * @param {*} moduleName 
  */
-Violine.reload = function(moduleName){
-	let path = "./violine_commands/"+moduleName+".js"
+Violine.reloadLegacy = function(moduleName){
+	let path = "./violine_commands_legacy/"+moduleName+".js"
 	console.log("Loading "+path);
 	try {
 		delete require.cache[require.resolve(path)];
-		Violine.commands[moduleName] = require(path);
+		Violine.legacyCommands[moduleName] = require(path);
 	
 		return Reply.embed("✔️ Success: "+moduleName, 0x22ff44, true);
 	} catch(e){
@@ -84,7 +84,7 @@ Violine.reload = function(moduleName){
 /**
  * Load/Reload all modules and config.
  */
-Violine.reloadAll = function(){
+Violine.reloadAllLegacy = function(){
 	console.log("Reloading...");
 	try {
 		delete require.cache[require.resolve("./config.json")];
@@ -102,11 +102,11 @@ Violine.reloadAll = function(){
 	});
 
 	let result = [];
-	Violine.commands = {};
-	for (var i in Violine.config.import_commands)
-		result.push(Violine.reload(Violine.config.import_commands[i]));
+	Violine.legacyCommands = {};
+	for (var i in Violine.config.import_commands_legacy)
+		result.push(Violine.reloadLegacy(Violine.config.import_commands_legacy[i]));
 	
-	Violine.commands["built-in"] = require("./built-in.js");
+	//Violine.legacyCommands["built-in"] = require("./built-in.js");
 
 	console.log("Done\n");
 	return result;

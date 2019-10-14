@@ -1,5 +1,5 @@
-let Violine = require("./violine.js");
-let Reply = require("./messages.js");
+let Violine = require("../violine.js");
+let Reply = require("../messages.js");
 	
 var builtin = {};
 builtin["v!reload"] = {
@@ -10,7 +10,7 @@ builtin["v!reload"] = {
 		if (params.length<=0)
 			result = Reply.invalid;
 		else for (var i in params)
-			result.push(Violine.reload(params[i]));
+			result.push(Violine.reloadLegacy(params[i]));
 		return result;
 	}
 };
@@ -19,7 +19,7 @@ builtin["v!reloadall"] = {
 	_admin: true,
 	help: ()=>"Reload all command modules",
 	call: function(){
-		return Violine.reloadAll();
+		return Violine.reloadLegacyAllLegacy();
 	}
 };
 

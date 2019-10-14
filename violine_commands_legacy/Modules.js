@@ -8,14 +8,14 @@ commands["v!help"] = {
 	call: function(params, channel) {
 		let result = [];
 		if (params.length<=0){
-			for (var mod in Violine.commands){
+			for (var mod in Violine.legacyCommands){
 				let block = {embed: {
 					color: Violine.config.favColor,
 					title: '🔩 '+mod,
 					description: ''
 				}}
 
-				for (var cmd in Violine.commands[mod])
+				for (var cmd in Violine.legacyCommands[mod])
 					block.embed.description += cmd+'\n';
 				result.push(block);
 			}
@@ -29,10 +29,10 @@ commands["v!help"] = {
 				title: '🔩 '+cmd,
 				footer: {text:'Module : '}
 			}}
-			for (var mod in Violine.commands){
-				if (Violine.commands[mod][cmd]){
-					result.embed.description = Violine.commands[mod][cmd].help ?
-						Violine.commands[mod][cmd].help(params):
+			for (var mod in Violine.legacyCommands){
+				if (Violine.legacyCommands[mod][cmd]){
+					result.embed.description = Violine.legacyCommands[mod][cmd].help ?
+						Violine.legacyCommands[mod][cmd].help(params):
 						"This command has no documentation"
 					result.embed.footer.text += mod;
 					return result;
@@ -51,10 +51,10 @@ commands["v!modules"] = {
 			footer: {text:''}
 		}}
 
-		for (var mod in Violine.config.import_commands){
-			mod = Violine.config.import_commands[mod];
-			result.embed.footer.text += Violine.commands[mod] ? 
-				"\n✔️"+mod+" ("+Object.keys(Violine.commands[mod]).length+"); " :
+		for (var mod in Violine.config.import_commands_legacy){
+			mod = Violine.config.import_commands_legacy[mod];
+			result.embed.footer.text += Violine.legacyCommands[mod] ? 
+				"\n✔️"+mod+" ("+Object.keys(Violine.legacyCommands[mod]).length+"); " :
 				"\n❌"+mod+';';
 		}
 		return result;
