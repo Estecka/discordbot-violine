@@ -1,0 +1,10 @@
+{
+	"game" : "♪♫ v!help",
+	"favColor" : 8930559,
+	"admins" : [ "124935323628077056" ],
+
+	"import_commands" : ["Modules", "Injunction", "Miscellaneous", "RnD", "Yafnag"],
+
+	"mod_dir" : "./violine_commands/",
+	"mod_exclude" : []
+}
