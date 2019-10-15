@@ -14,7 +14,7 @@ var fs = require("fs");
   * @returns {boolean} True if `char` is a whitespace
   */
 function IsWhitespace(char) {
-	return " \t\n\r\v\f".indexOf(char) > 0;
+	return " \t\n\r\v\f".indexOf(char) >= 0;
 }
 
 var Violine = {
@@ -22,48 +22,48 @@ var Violine = {
 	 * Processes a message 
 	 * @param {string} sender The ID of the sender
 	 * @param {string} message The body of the message
-	 * @return {object} The answer, or a series of answer.
+	 * @return {object} The answer, or an array of answers.
 	 */
 	ProcessMessage: function(sender, message) {},
 
 	/**
-	 * Gets the next parameter from the given string.
-	 * @param {string} message The full input command.
+	 * Gets the first word of a sentence, along with and the remaining string.
+	 * @param {string} sentence The full sentence.
 	 * @returns {ShiftedParams}
 	 */
-	ShiftParams: function(message){
+	ShiftSentence: function(sentence){
 		let result = {};
-		let length = message.length;
+		let length = sentence.length;
 		let limit = 0;
 
 		for (let i=0; i<length; i++) {
-			if (IsWhitespace(message[i])) {
+			if (IsWhitespace(sentence[i])) {
 				limit = i;
 				break;
 			}
 		}
-		result.value = message.substring(0, limit);
+		result.value = sentence.substring(0, limit);
 		limit++;
 		for (let i=limit; i<length; i++){
-			if (!IsWhitespace(message[i])){
+			if (!IsWhitespace(sentence[i])){
 				limit = i;
 				break;
 			}
 		}
 		if (limit < length)
-			result.remaining = message.substring(limit);
+			result.remaining = sentence.substring(limit);
 		else
 			result.remaining = "";
 		return result;
 	},
 
 	/**
-	 * Separates a string into parameters at every whitespace.
-	 * @param {*} parameter 
+	 * Separates a sentence into words at every whitespace.
+	 * @param {*} sentence 
 	 * @return {string[]} An array of words.
 	 */
-	SplitsParameters: function(parameter){
-		return parameter.match(/\S+/g) || [];
+	SplitSentence: function(sentence){
+		return sentence.match(/\S+/g) || [];
 	},
 };
 Violine.config = Config;
@@ -91,6 +91,7 @@ Violine.initialize = function(){
 
 /**
  * Splits a string into words.
+ * Obsolete, use Violine.SplitSentence instead.
  * @param {*} message 
  */
 Violine.parse = function(message){
