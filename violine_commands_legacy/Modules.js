@@ -7,6 +7,7 @@ commands["v!help"] = {
 	_isLegacy: true,
 	help: ()=>"Provides some mighty useful intel, if I do say so myself.",
 	call: function(params, channel) {
+		throw "Method prototype no longer supported";
 		let result = [];
 		if (params.length<=0){
 			for (var mod in Violine.legacyCommands){

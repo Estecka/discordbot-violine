@@ -21,11 +21,57 @@ function IsWhitespace(char) {
 var Violine = {
 	/**
 	 * Processes a message 
-	 * @param {string} sender The ID of the sender
+	 * @param {string} senderId The ID of the sender
 	 * @param {string} message The body of the message
 	 * @return {object} The answer, or an array of answers.
 	 */
-	ProcessMessage: function(sender, message) {},
+	ProcessSentence: function(senderId, sentence) {
+		let words = Interpreter.ShiftSentence(sentence);
+		let cmdName = words.current;
+		let args = words.remaining;
+		let result;
+
+		result = this.ProcessCommand(cmdName, args);
+
+		if (result)
+			return result;
+	},
+
+	/**
+	 * Find the corresponding command and executes it.
+	 * @param {string} cmdName The name of the command
+	 * @param {string} args The unprocessed arguments string
+	 * @returns {object} The anwser to the command, or Null if no matching command was found.
+	 */
+	ProcessCommand: function(cmdName, args) {
+		for (let i in this.legacyCommands){
+			let cmd = this.legacyCommands[i][cmdName];
+			if (cmd){
+				// Admin handling should be moved into the command Nests
+				if (cmd._isAdmin && !Violine.config.admins.includes(senderId))
+					result = {embed: {
+						color: 0xff8844,
+						footer: {text: "🚷 Forbidden"}
+					}};
+				else {
+					if (cmd._isLegacy)
+						args = Interpreter.SplitSentence(args);
+					try{
+						result = cmd.call(args);
+					}
+					catch(e){
+						result = Reply.Error(null, "Command failed to execute");
+						console.error(e);
+					}
+				}
+
+				// Here, convert string results to message objects
+
+				return result;
+				break;
+			}
+		}
+	}
 };
 Violine.config = Config;
 Violine.legacyCommands = {};

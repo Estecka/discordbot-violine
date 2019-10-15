@@ -48,32 +48,7 @@ Client.on('message', function (user, userID, channelID, message, evt) {
     if (userID == Client.id) // Ignore own messages
         return;
     var result = 0;
-    var words = Violine.parse(message);
-    var cmdName = words[0];
-    var params = words.slice(1);
-
-    for (var i in Violine.legacyCommands){
-        let cmd = Violine.legacyCommands[i][cmdName];
-        if (cmd){
-
-            if (cmd._isAdmin && !Violine.config.admins.includes(userID))
-                result = {embed: {
-                    color: 0xff8844,
-                    footer: {text: "🚷 403 Forbidden"}
-                }};
-            else {
-                params
-                try{
-                    result = cmd.call(params, channelID);
-                }
-                catch(e){
-                    result = Reply.Error(null, "Command failed to execute");
-                    console.error(e);
-                }
-            }
-            break;
-        }
-    }
+	result = Violine.ProcessSentence(userID, message);
 
 	// This methods needs to be taken out of here.
 	/**
@@ -102,6 +77,7 @@ Client.on('message', function (user, userID, channelID, message, evt) {
     }
 
     console.log(result);
+    var words = Violine.parse(message);	
     if (result){
         console.log ("I : "+message);
         if (Array.isArray(result)){

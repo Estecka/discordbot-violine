@@ -14,6 +14,7 @@ yafnag["v!yafnag"] = {
 	help: ()=>"Yet Another Fantasy Name Generator\n"
 	+ "`v!Yafnag [sizeMin] [sizeMax] [amount]`",
 	call: function (params, channel) {
+		throw "Method prototype no longer supported.";
 		if (params.length<3)
 			return Reply.invalid;
 		

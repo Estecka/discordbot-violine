@@ -26,7 +26,7 @@ var Interpreter =
 		let limit = 0;
 
 		for (let i=0; i<length; i++) {
-			if (IsWhitespace(sentence[i])) {
+			if (this.IsWhitespace(sentence[i])) {
 				limit = i;
 				break;
 			}
@@ -34,7 +34,7 @@ var Interpreter =
 		result.value = sentence.substring(0, limit);
 		limit++;
 		for (let i=limit; i<length; i++){
-			if (!IsWhitespace(sentence[i])){
+			if (!this.IsWhitespace(sentence[i])){
 				limit = i;
 				break;
 			}
