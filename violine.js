@@ -1,5 +1,6 @@
 var Reply = require("./messages.js");
 var Config = require("./config.json");
+var Interpreter = require("./Interpreter.js");
 var fs = require("fs");
 
 /**
@@ -25,46 +26,6 @@ var Violine = {
 	 * @return {object} The answer, or an array of answers.
 	 */
 	ProcessMessage: function(sender, message) {},
-
-	/**
-	 * Gets the first word of a sentence, along with and the remaining string.
-	 * @param {string} sentence The full sentence.
-	 * @returns {ShiftedParams}
-	 */
-	ShiftSentence: function(sentence){
-		let result = {};
-		let length = sentence.length;
-		let limit = 0;
-
-		for (let i=0; i<length; i++) {
-			if (IsWhitespace(sentence[i])) {
-				limit = i;
-				break;
-			}
-		}
-		result.value = sentence.substring(0, limit);
-		limit++;
-		for (let i=limit; i<length; i++){
-			if (!IsWhitespace(sentence[i])){
-				limit = i;
-				break;
-			}
-		}
-		if (limit < length)
-			result.remaining = sentence.substring(limit);
-		else
-			result.remaining = "";
-		return result;
-	},
-
-	/**
-	 * Separates a sentence into words at every whitespace.
-	 * @param {*} sentence 
-	 * @return {string[]} An array of words.
-	 */
-	SplitSentence: function(sentence){
-		return sentence.match(/\S+/g) || [];
-	},
 };
 Violine.config = Config;
 Violine.legacyCommands = {};
