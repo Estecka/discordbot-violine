@@ -74,12 +74,13 @@ Client.on('message', function (user, userID, channelID, message, evt) {
                 });
             }
         });
-    }
+	}
 
+	console.log("> " + message);
     console.log(result);
+	console.log('');
     var words = Violine.parse(message);	
     if (result){
-        console.log ("I : "+message);
         if (Array.isArray(result)){
             let time = 0;
             for (var i in result){
@@ -90,7 +91,6 @@ Client.on('message', function (user, userID, channelID, message, evt) {
             Violine.Send(result, channelID);
 
             //stampMsg(result, channelID);
-        console.log('');
     }
 	// If no command are triggered, hums to your name.
     else if(words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {

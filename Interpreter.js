@@ -31,7 +31,7 @@ var Interpreter =
 				break;
 			}
 		}
-		result.value = sentence.substring(0, limit);
+		result.current = sentence.substring(0, limit);
 		limit++;
 		for (let i=limit; i<length; i++){
 			if (!this.IsWhitespace(sentence[i])){

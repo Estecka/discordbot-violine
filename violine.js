@@ -31,7 +31,7 @@ var Violine = {
 		let args = words.remaining;
 		let result;
 
-		result = this.ProcessCommand(cmdName, args);
+		result = this.ProcessCommand(cmdName, args, senderId);
 
 		if (result)
 			return result;
@@ -41,9 +41,10 @@ var Violine = {
 	 * Find the corresponding command and executes it.
 	 * @param {string} cmdName The name of the command
 	 * @param {string} args The unprocessed arguments string
+	 * @param {string} senderId The Discord ID of the sender.
 	 * @returns {object} The anwser to the command, or Null if no matching command was found.
 	 */
-	ProcessCommand: function(cmdName, args) {
+	ProcessCommand: function(cmdName, args, senderId) {
 		for (let i in this.legacyCommands){
 			let cmd = this.legacyCommands[i][cmdName];
 			if (cmd){
