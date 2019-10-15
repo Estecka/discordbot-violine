@@ -1,6 +1,6 @@
 {
 	"name": "discordbot-violine",
-	"version": "0.1.0",
+	"version": "0.2.0-indev",
 	"description": "Estecka's own makeshift maiden",
 	"main": "main.js",
 	"author": "Estecka",
