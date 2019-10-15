@@ -3,7 +3,8 @@ let Reply = require("../messages.js");
 	
 var builtin = {};
 builtin["v!reload"] = {
-	_admin: true,
+	_isLegacy: true,
+	_isAdmin: true,
 	help: ()=>"Reload all or given modules",
 	call: function(params) {
 		let result = [];
@@ -16,7 +17,8 @@ builtin["v!reload"] = {
 };
 
 builtin["v!reloadall"] = {
-	_admin: true,
+	_isLegacy: true,
+	_isAdmin: true,
 	help: ()=>"Reload all command modules",
 	call: function(){
 		return Violine.reloadLegacyAllLegacy();

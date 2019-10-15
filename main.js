@@ -56,7 +56,7 @@ Client.on('message', function (user, userID, channelID, message, evt) {
         let cmd = Violine.legacyCommands[i][cmdName];
         if (cmd){
 
-            if (cmd._admin && !Violine.config.admins.includes(userID))
+            if (cmd._isAdmin && !Violine.config.admins.includes(userID))
                 result = {embed: {
                     color: 0xff8844,
                     footer: {text: "🚷 403 Forbidden"}

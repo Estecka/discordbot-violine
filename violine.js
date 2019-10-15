@@ -1,7 +1,7 @@
-var Reply = require("./messages.js");
+var Reply  = require("./messages.js");
 var Config = require("./config.json");
+var Nest   = require("./Nest.js");
 var Interpreter = require("./Interpreter.js");
-var fs = require("fs");
 
 /**
  * @typedef {object} ShiftedParams

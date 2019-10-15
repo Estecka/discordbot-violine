@@ -10,6 +10,7 @@ var client = xmlrpc.createSecureClient({
 
 yafnag = {};
 yafnag["v!yafnag"] = {
+	_isLegacy: true,
 	help: ()=>"Yet Another Fantasy Name Generator\n"
 	+ "`v!Yafnag [sizeMin] [sizeMax] [amount]`",
 	call: function (params, channel) {

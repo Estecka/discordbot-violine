@@ -3,6 +3,7 @@ let commands = {}
 
 
 commands["v!color"] = {
+	_isLegacy: true,
 	help: ()=>"Preview a color-code \nE.g: `v!color 0x8844ff`",
 	call: function(params){
 		code = parseInt(params[0]);
@@ -18,7 +19,8 @@ commands["v!color"] = {
 
 
 commands["v!drill"] = {
-	help: "Simulates a given error message.",
+	_isLegacy: true,
+	help: ()=> "Simulates a given error message.",
 	call: function(params) {
 		if (params.length<=0 && Reply[params[0]] == undefined)
 			return Reply.invalid;

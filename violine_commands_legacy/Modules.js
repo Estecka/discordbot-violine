@@ -4,6 +4,7 @@ let Violine = require("../violine.js");
 var commands = {};
 
 commands["v!help"] = {
+	_isLegacy: true,
 	help: ()=>"Provides some mighty useful intel, if I do say so myself.",
 	call: function(params, channel) {
 		let result = [];
@@ -43,6 +44,7 @@ commands["v!help"] = {
 };
 
 commands["v!modules"] = {
+	_isLegacy: true,
 	help:()=>"List all known modules' status",
 	call: function(){
 		let result = {embed: {

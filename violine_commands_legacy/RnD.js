@@ -4,7 +4,8 @@ var Reply = require("../messages.js");
 RnD = {};
 
 RnD["v!config"] = {
-	_admin: true,
+	_isLegacy: true,
+	_isAdmin: true,
 	call: function(p){
 		let cmd = p.shift().toLowerCase();
 		

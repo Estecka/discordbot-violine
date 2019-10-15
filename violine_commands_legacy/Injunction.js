@@ -22,7 +22,8 @@ injonctions["go to sleep"] = function(){
 var commands = {};
 commands[Violine.mentions[0]] = 
 commands[Violine.mentions[1]] = {
-	_admin: true,
+	_isLegacy: true,
+	_isAdmin: true,
 	help: ()=>"Talk to me",
 	call : function(params){
 		params = params.join(' ').toLowerCase();
