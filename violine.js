@@ -3,6 +3,8 @@ var Config = require("./config.json");
 var Nest   = require("./Nest.js");
 var Interpreter = require("./Interpreter.js");
 
+var Postman = require("./Postman.js");
+
 /**
  * @typedef {object} ShiftedParams
  * @property {string} current The value of the current parameter.
@@ -21,26 +23,23 @@ function IsWhitespace(char) {
 var Violine = {
 	/**
 	 * Processes a message 
-	 * @param {string} senderId The ID of the sender
-	 * @param {string} message The body of the message
+	 * @param {Postman} postman The Postman object that carries the message
 	 * @return {object} The answer, or an array of answers.
 	 */
-	ProcessSentence: function(senderId, sentence) {
-		let words = Interpreter.ShiftSentence(sentence);
+	ProcessSentence: function(postman) {
+		let words = Interpreter.ShiftSentence(postman.message.content);
 		let cmdName = words.current;
 		let args = words.remaining;
-		let result;
 
-		result = this.ProcessCommand(cmdName, args, senderId);
+		let result = this.ProcessCommand(cmdName, args, postman.message.senderId);
 
-		if (result)
-			return result;
+		if (result && isNaN(result))
+			postman.Complete(result);
 		// If no commands are triggered, hum to your name.
-		else {
-			let words = Interpreter.SplitSentence(sentence);
-			if (words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {
-				return { message: "♪" };
-			}
+		if (!result) {
+			words = Interpreter.SplitSentence(postman.message.content);
+			if (words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1]))
+				postman.Complete({ message: "♪" });
 		}
 	},
 

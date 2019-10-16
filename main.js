@@ -14,8 +14,6 @@ module.paths.push("/");
 var Discord = require('discord.io');
 var logger  = require('winston');
 var auth    = require('./auth.json');
-var Reply   = require("./messages.js");
-var Postman = require("./Postman.js");
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -31,8 +29,10 @@ global.Client = new Discord.Client({
    autorun: true
 });
 
-var Violine = 
-global.Violine = require('./violine.js');
+
+var Reply   = require("./messages.js");
+var Postman = require("./Postman.js");
+var Violine = require('./violine.js');
 
 /**
  * Ships messages to the appropriate destination.
@@ -98,11 +98,6 @@ Client.on('message', function (user, userID, channelID, message, evt) {
 		StampMessages(Reply.error, channelID, true);
 		console.log('');
 	}
-	
-    var result = 0;
-	result = Violine.ProcessSentence(userID, message);
 
-    var words = Violine.parse(message);	
-    if (result && isNaN(result))
-		postman.Complete(result);
+	Violine.ProcessSentence(postman);
 });
