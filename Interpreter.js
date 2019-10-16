@@ -1,7 +1,7 @@
 /**
- * @typedef {Object} ShiftedSentence
- * @property {string} current The value of the current parameter.
- * @property {string} remaining The remaining parameters.
+ * @typedef {Object} ShiftedWord
+ * @property {string} current The word that has been extracted.
+ * @property {string} remaining The remaining part of the sentence.
  */
 
 var Interpreter = 
@@ -18,7 +18,7 @@ var Interpreter =
 	/**
 	 * Gets the first word of a sentence, along with and the remaining string.
 	 * @param {string} sentence The full sentence.
-	 * @returns {ShiftedSentence} Ta mère
+	 * @returns {ShiftedWord} Ta mère
 	 */
 	ShiftSentence: function(sentence){
 		let result = {};

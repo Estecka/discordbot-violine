@@ -2,23 +2,7 @@ var Reply  = require("./messages.js");
 var Config = require("./config.json");
 var Nest   = require("./Nest.js");
 var Interpreter = require("./Interpreter.js");
-
 var Postman = require("./Postman.js");
-
-/**
- * @typedef {object} ShiftedParams
- * @property {string} current The value of the current parameter.
- * @property {string} remaining The remaining parameters.
- */
-
-/**
-  * Checks whether a given character is a whitespace
-  * @param {character} char 
-  * @returns {boolean} True if `char` is a whitespace
-  */
-function IsWhitespace(char) {
-	return " \t\n\r\v\f".indexOf(char) >= 0;
-}
 
 var Violine = {
 	/**
@@ -100,23 +84,6 @@ Violine.initialize = function(){
 		console.error(err);
 		return -1;
 	}
-};
-
-
-/**
- * Splits a string into words.
- * Obsolete, use Violine.SplitSentence instead.
- * @param {*} message 
- */
-Violine.parse = function(message){
-	message = message.split(' ');
-	for (var i=0; i<message.length; i++){
-		if (!message[i]){
-			message.splice(i,1);
-			i--;
-		}
-	}
-	return message;
 };
 
 Violine.Send = function(messages, channel){
