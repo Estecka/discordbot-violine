@@ -1,3 +1,4 @@
+console.warn("Messages.js is obsolete. Use Reply.js instead");
 
 var Reply = {};
 /**

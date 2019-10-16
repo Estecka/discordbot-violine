@@ -1,6 +1,6 @@
 var Violine = require("../violine.js");
 var xmlrpc = require("xmlrpc");
-var Reply = require("../messages.js");
+var Reply = require("../Reply.js");
 
 
 var client = xmlrpc.createSecureClient({
@@ -34,7 +34,7 @@ yafnag["v!yafnag"] = {
 				Violine.Send(Reply.Error("Dicelog returned an error"), channel);
 			}
 			else{
-				let r = Reply.embed();
+				let r = Reply.Say(undefined);
 				r.embed.author = { 
 					name: "📜 Yafnag",
 					url: "http://dicelog.com/yafnag",

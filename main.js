@@ -30,7 +30,7 @@ global.Client = new Discord.Client({
 });
 
 
-var Reply   = require("./messages.js");
+var Reply   = require("./Reply.js");
 var Postman = require("./Postman.js");
 var Violine = require('./violine.js');
 

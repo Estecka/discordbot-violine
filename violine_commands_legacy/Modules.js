@@ -1,4 +1,4 @@
-let Reply = require("../messages.js");
+let Reply = require("../Reply.js");
 let Violine = require("../violine.js");
 
 var commands = {};
@@ -48,19 +48,17 @@ commands["v!modules"] = {
 	_isLegacy: true,
 	help:()=>"List all known modules' status",
 	call: function(){
-		let result = {embed: {
-			color: Violine.config.favColor,
-			title: "⚙️ Modules :",
-			footer: {text:''}
-		}}
+		let reply = Reply.Say(undefined);
+		reply.embed.title = "⚙️ Modules :";
+		reply.embed.footer = {text:''};
 
 		for (var mod in Violine.config.import_commands_legacy){
 			mod = Violine.config.import_commands_legacy[mod];
-			result.embed.footer.text += Violine.legacyCommands[mod] ? 
+			reply.embed.footer.text += Violine.legacyCommands[mod] ? 
 				"\n✔️"+mod+" ("+Object.keys(Violine.legacyCommands[mod]).length+"); " :
 				"\n❌"+mod+';';
 		}
-		return result;
+		return reply;
 	}
 };
 

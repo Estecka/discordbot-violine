@@ -1,11 +1,11 @@
-var Reply = require("../messages.js");
+var Reply = require("../Reply.js");
 
 var injonctions = {};
 injonctions["sing"] = function(){
 	let song = '';
 	for (let i=0; i<10; i++)
 		song += (Math.random()>0.5) ? '♫' : '♪';
-	return Reply.say(song);
+	return Reply.Say(song);
 };
 injonctions["go to sleep"] = function(){
 	setTimeout(
@@ -15,7 +15,7 @@ injonctions["go to sleep"] = function(){
 		},
 		500
 	);
-	return Reply.say("♪~");
+	return Reply.Say("♪~");
 };
 
 

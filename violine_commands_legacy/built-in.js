@@ -1,5 +1,5 @@
 let Violine = require("../violine.js");
-let Reply = require("../messages.js");
+let Reply = require("../Reply.js");
 	
 var builtin = {};
 builtin["v!reload"] = {

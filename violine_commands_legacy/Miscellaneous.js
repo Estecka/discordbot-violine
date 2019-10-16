@@ -1,4 +1,4 @@
-let Reply = require("../messages.js");
+let Reply = require("../Reply.js");
 let commands = {}
 
 
@@ -6,13 +6,14 @@ commands["v!color"] = {
 	_isLegacy: true,
 	help: ()=>"Preview a color-code \nE.g: `v!color 0x8844ff`",
 	call: function(params){
-		code = parseInt(params[0]);
-		if (isNaN(code) || code<0)
+		color = parseInt(params[0]);
+		if (isNaN(color) || color<0 || color>0xffffff)
 			return Reply.invalid;
-		else if (code>0xffffff)
-			return Reply.embed("Too big");
-		else
-			return Reply.embed(params[0], code);
+		else {
+			let reply = Reply.Say(params[0]);
+			reply.embed.color = color;
+			return reply
+		}
 	}
 };
 
@@ -22,6 +23,7 @@ commands["v!drill"] = {
 	_isLegacy: true,
 	help: ()=> "Simulates a given error message.",
 	call: function(params) {
+		throw "Command no longer supported";
 		if (params.length<=0 && Reply[params[0]] == undefined)
 			return Reply.invalid;
 

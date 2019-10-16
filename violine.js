@@ -1,4 +1,4 @@
-var Reply  = require("./messages.js");
+var Reply  = require("./Reply.js");
 var Config = require("./config.json");
 var Nest   = require("./Nest.js");
 var Interpreter = require("./Interpreter.js");
@@ -122,11 +122,16 @@ Violine.reloadLegacy = function(moduleName){
 		delete require.cache[require.resolve(path)];
 		Violine.legacyCommands[moduleName] = require(path);
 	
-		return Reply.embed("✔️ Success: "+moduleName, 0x22ff44, true);
+		let r = Reply.Whisper("✔️ Success: "+moduleName);
+		r.embed.color = 0x22ff44;
+		return r;
 	} catch(e){
 		console.error("Module failed to load: "+moduleName+" ("+path+")");
 		console.error(e);
-		return Reply.embed("❌ Failure: "+moduleName, 0xFF4422, true);
+		
+		let r = Reply.Whisper("❌ Failure: "+moduleName);
+		r.embed.color = 0xff4422;
+		return r;
 	}
 };
 
