@@ -15,6 +15,7 @@ var Discord = require('discord.io');
 var logger  = require('winston');
 var auth    = require('./auth.json');
 var Reply   = require("./messages.js");
+var Postman = require("./Postman.js");
 
 // Configure logger settings
 logger.remove(logger.transports.Console);
@@ -33,6 +34,43 @@ global.Client = new Discord.Client({
 var Violine = 
 global.Violine = require('./violine.js');
 
+/**
+ * Ships messages to the appropriate destination.
+ * @param {object|object[]} message A single or an Array of preformatted message objects
+ * @param {string} channel The ID of the destination channel.
+ * @param {boolean} silent if true, the message will not be logged.
+ */
+function StampMessages (message, channel, silent=false){
+	let msg;
+
+	if (Array.isArray(message))
+		msg = message.shift();
+	else {
+		msg = message
+		message = [];
+	}
+
+	msg.to = channel;
+	if (!silent)
+		console.log(msg);
+
+	Client.sendMessage(msg, function(error, response) {
+		if (message.length>0)
+			setTimeout(()=>StampMessages(message, channel, silent), 1000);
+		if (error) {
+			console.warn(error)
+			Client.sendMessage({
+				to: channel,
+				embed:{
+					color: 0xff8800,
+					description: "⛔ Social error"
+				},
+				typing: type
+			});
+		}
+	});
+}
+
 
 // -- READY --
 Client.on('ready', function (evt) {
@@ -47,50 +85,27 @@ Client.on('ready', function (evt) {
 Client.on('message', function (user, userID, channelID, message, evt) {
     if (userID == Client.id) // Ignore own messages
         return;
+	
+	let postman = new Postman(message, userID, channelID);
+	postman.onSuccess = (reply) => {
+		console.log("> " + message);
+		StampMessages(reply, channelID);
+		console.log('');
+	}
+	postman.onError = (error) => {
+		console.log("> " + message);
+		console.error(error);
+		StampMessages(Reply.error, channelID, true);
+		console.log('');
+	}
+	
     var result = 0;
 	result = Violine.ProcessSentence(userID, message);
 
-	// This methods needs to be taken out of here.
-	/**
-	 * Prepares a message content to be sent onto Discord.
-	 * @param {*} msg The message object 
-	 * @param {*} channel The channel id the message will be sent to.
-	 * @param {*} type Should Violine simulate typing.
-	 */
-    let stampMsg = function(msg, channel, type=false){
-        msg.to = channel;
-        console.log (msg);
-
-        Client.sendMessage(msg, function(error, response){
-            if (error) {
-                console.warn(error)
-                Client.sendMessage({
-                    to: channel,
-                    embed:{
-                        color: 0xff8800,
-                        description: "⛔ A message was denied by Discord"
-                    },
-                    typing: type
-                });
-            }
-        });
-	}
-
-	console.log("> " + message);
-    console.log(result);
-	console.log('');
     var words = Violine.parse(message);	
     if (result){
-        if (Array.isArray(result)){
-            let time = 0;
-            for (var i in result){
-                stampMsg(result[i], channelID, true);
-            }
-        }
-        else if (isNaN(result))
-            Violine.Send(result, channelID);
-
-            //stampMsg(result, channelID);
+		if (isNaN(result))
+			postman.Complete(result);
     }
 	// If no command are triggered, hums to your name.
     else if(words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {

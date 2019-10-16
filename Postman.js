@@ -55,9 +55,9 @@ class Postman
 		if (this._completed)
 			throw "Attempted reusing an expired Postman";
 		if (this.onSuccess)
-			this.onSuccess.call(reply);
+			this.onSuccess(reply);
 		if (this.onComplete)
-			this.onComplete.call();
+			this.onComplete();
 	}
 
 	/**
@@ -68,9 +68,9 @@ class Postman
 		if (this._completed)
 			throw "Attempted reusing an expired Postman";
 		if (this.onError)
-			this.onError.call(motif);
+			this.onError(motif);
 		if (this.onComplete)
-			this.onComplete.call();
+			this.onComplete();
 	}
 };
 
