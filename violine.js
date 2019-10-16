@@ -35,6 +35,13 @@ var Violine = {
 
 		if (result)
 			return result;
+		// If no commands are triggered, hum to your name.
+		else {
+			let words = Interpreter.SplitSentence(sentence);
+			if (words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {
+				return { message: "♪" };
+			}
+		}
 	},
 
 	/**
@@ -69,9 +76,9 @@ var Violine = {
 				// Here, convert string results to message objects
 
 				return result;
-				break;
 			}
 		}
+		return false;
 	}
 };
 Violine.config = Config;
