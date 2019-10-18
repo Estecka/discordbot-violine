@@ -180,6 +180,17 @@ class Reply
 			},
 		}
 	}
+	/**
+	 * A generic, ready-to-use notice for forbidden notices.
+	 */
+	static get forbidden() {
+		return {
+			embed: {
+				color: 0xff8844,
+				footer: { text: "🚷 Forbidden" },
+			},
+		}
+	}
 
 	/**
 	 * An example reply demonstrating every possible feature.

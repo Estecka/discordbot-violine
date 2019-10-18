@@ -7,12 +7,12 @@ builtin["v!reload"] = {
 	_isAdmin: true,
 	help: ()=>"Reload all or given modules",
 	Invoke: function(params) {
-		let result = [];
 		if (params.length<=0)
-			result = Reply.invalid;
-		else for (var i in params)
-			result.push(Violine.reloadLegacy(params[i]));
-		return result;
+			return Reply.invalid;
+
+		for (var i in params)
+			Violine.reloadLegacy(params[i]);
+		return Reply.RawTell("♪!");
 	}
 };
 
@@ -21,7 +21,8 @@ builtin["v!reloadall"] = {
 	_isAdmin: true,
 	help: ()=>"Reload all command modules",
 	Invoke: function(){
-		return Violine.reloadLegacyAllLegacy();
+		Violine.reloadLegacyAllLegacy();
+		return Reply.RawTell("♫!");
 	}
 };
 

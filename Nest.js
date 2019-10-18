@@ -1,18 +1,23 @@
 var Interpreter = require("./Interpreter.js");
+var Reply = require("./Reply.js");
 let Command = require("./Command.js");
 let Postman = require("./Postman.js");
 
 class Nest 
 {
+	/**
+	 * If set to true, `Run()` will the legacy prototype.
+	 * @type {boolean}
+	 */
 	_isLegacy = false;
 	/**
 	 * A dictionnary of {Command} objects :
+	 * @type {Object.<string, Command>}
 	 */
 	_commands = {};
 
 	/**
-	 * 
-	 * @param {CallableFunction{}} module 
+	 * @param {Object.<string, CallableFunction>} module 
 	 */
 	constructor(module){
 		this._commands = module;
@@ -23,21 +28,31 @@ class Nest
 	 * @param {string} name The name of the command to execute
 	 * @param {string} args The argument passed to the command.
 	 * @param {Postman} postman The Postman used for replying.
+	 * @return {boolean} `true` if a fitting command was found.
 	 */
 	Run (name, args, postman) {
-		for (cmd in this._commands){
-			if (cmd == name)
+		for (let cmdName in this._commands){
+			if (cmdName == name)
 			{
 				/**
 				 * @type {Command}
 				 */
-				cmd = this._commands[name];
-				if (cmd._isLegacy)
+				let cmd = this._commands[name];
+				if (cmd._isLegacy){
 					args = Interpreter.SplitSentence(args);
-				return cmd.Invoke(args);
+					let reply = cmd.Invoke(args);
+					if (reply && isNaN(reply))
+						postman.Complete(reply);
+					else
+						postman.Complete(Reply.RawTell("♪♫"));
+				}
+				else {
+					cmd.Invoke(args, postman);
+				}
+				return true;
 			}
 		}
-		return null;
+		return false;
 	};
 };
 

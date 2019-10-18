@@ -10,14 +10,14 @@ commands["v!help"] = {
 		throw "Method prototype no longer supported";
 		let result = [];
 		if (params.length<=0){
-			for (var mod in Violine.legacyCommands){
+			for (var mod in Violine.legacyModules){
 				let block = {embed: {
 					color: Violine.config.favColor,
 					title: '🔩 '+mod,
 					description: ''
 				}}
 
-				for (var cmd in Violine.legacyCommands[mod])
+				for (var cmd in Violine.legacyModules[mod])
 					block.embed.description += cmd+'\n';
 				result.push(block);
 			}
@@ -31,10 +31,10 @@ commands["v!help"] = {
 				title: '🔩 '+cmd,
 				footer: {text:'Module : '}
 			}}
-			for (var mod in Violine.legacyCommands){
-				if (Violine.legacyCommands[mod][cmd]){
-					result.embed.description = Violine.legacyCommands[mod][cmd].help ?
-						Violine.legacyCommands[mod][cmd].help(params):
+			for (var mod in Violine.legacyModules){
+				if (Violine.legacyModules[mod][cmd]){
+					result.embed.description = Violine.legacyModules[mod][cmd].help ?
+						Violine.legacyModules[mod][cmd].help(params):
 						"This command has no documentation"
 					result.embed.footer.text += mod;
 					return result;
@@ -54,8 +54,8 @@ commands["v!modules"] = {
 
 		for (var mod in Violine.config.import_commands_legacy){
 			mod = Violine.config.import_commands_legacy[mod];
-			reply.embed.footer.text += Violine.legacyCommands[mod] ? 
-				"\n✔️"+mod+" ("+Object.keys(Violine.legacyCommands[mod]).length+"); " :
+			reply.embed.footer.text += Violine.legacyModules[mod] ? 
+				"\n✔️"+mod+" ("+Object.keys(Violine.legacyModules[mod]).length+"); " :
 				"\n❌"+mod+';';
 		}
 		return reply;

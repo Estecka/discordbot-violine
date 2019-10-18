@@ -1,3 +1,4 @@
+let Reply = require("./Reply.js");
 
 /**
  * @typedef Message
@@ -49,7 +50,7 @@ class Postman
 
 	/**
 	 * Sends one or several replies to the message. This should only be called once.
-	 * @param {object|object[]} reply 
+	 * @param {Reply|Reply[]} reply 
 	 */
 	Complete (reply) {
 		if (this._completed)

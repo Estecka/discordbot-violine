@@ -5,6 +5,13 @@ var Interpreter = require("./Interpreter.js");
 var Postman = require("./Postman.js");
 
 var Violine = {
+
+	/**
+	 * @type {Object.<string, Nest>}
+	 */
+	legacyModules: {},
+
+
 	/**
 	 * Processes a message 
 	 * @param {Postman} postman The Postman object that carries the message
@@ -32,40 +39,28 @@ var Violine = {
 	 * @param {string} cmdName The name of the command
 	 * @param {string} args The unprocessed arguments string
 	 * @param {Postman} postman The postman carrying the command
-	 * @returns {object} The anwser to the command, or Null if no matching command was found.
+	 * @return {boolean} `true` if a command was found.
 	 */
 	ProcessCommand: function(cmdName, args, postman) {
-		for (let i in this.legacyCommands){
-			let cmd = this.legacyCommands[i][cmdName];
-			if (cmd){
-				// Admin handling should be moved into the command Nests
-				if (cmd._isAdmin && !Violine.config.admins.includes(postman.message.senderId))
-					result = {embed: {
-						color: 0xff8844,
-						footer: {text: "🚷 Forbidden"}
-					}};
-				else {
-					if (cmd._isLegacy)
-						args = Interpreter.SplitSentence(args);
-					try{
-						result = cmd.Invoke(args);
-					}
-					catch(e){
-						result = Reply.Error(null, "Command failed to execute");
-						console.error(e);
-					}
-				}
+		let r = false;
+		for (let m in this.legacyModules){
+			let nest = this.legacyModules[m];
 
-				// Here, convert string results to message objects
-
-				return result;
+			try{
+				r = nest.Run(cmdName, args, postman);
+				if (r)
+					return true;
+			}
+			catch(e){
+				console.error(e);
+				postman.Complete(Reply.Error(null, "Command failed to execute"));
+				return true;
 			}
 		}
 		return false;
 	}
 };
 Violine.config = Config;
-Violine.legacyCommands = {};
 
 // --------------
 // Legacy methods
@@ -113,25 +108,20 @@ Violine.Send = function(messages, channel){
 
 /**
  * Load/Reload a given module.
- * @param {*} moduleName 
+ * @param {string} moduleName 
  */
 Violine.reloadLegacy = function(moduleName){
 	let path = "./violine_commands_legacy/"+moduleName+".js"
 	console.log("Loading "+path);
 	try {
 		delete require.cache[require.resolve(path)];
-		Violine.legacyCommands[moduleName] = require(path);
-	
-		let r = Reply.Whisper("✔️ Success: "+moduleName);
-		r.embed.color = 0x22ff44;
-		return r;
+		Violine.legacyModules[moduleName] = new Nest(require(path));
+		return 0;
 	} catch(e){
 		console.error("Module failed to load: "+moduleName+" ("+path+")");
 		console.error(e);
-		
-		let r = Reply.Whisper("❌ Failure: "+moduleName);
-		r.embed.color = 0xff4422;
-		return r;
+
+		return -1;
 	}
 };
 
@@ -155,15 +145,14 @@ Violine.reloadAllLegacy = function(){
 		}
 	});
 
+	for (var name in Violine.legacyModules)
+		delete Violine.legacyModules[name];
+
 	let result = [];
-	Violine.legacyCommands = {};
 	for (var i in Violine.config.import_commands_legacy)
-		result.push(Violine.reloadLegacy(Violine.config.import_commands_legacy[i]));
-	
-	//Violine.legacyCommands["built-in"] = require("./built-in.js");
+		Violine.reloadLegacy(Violine.config.import_commands_legacy[i]);
 
 	console.log("Done\n");
-	return result;
 };
 
 global.Violine = Violine;
