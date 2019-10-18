@@ -6,7 +6,7 @@ var commands = {};
 commands["v!help"] = {
 	_isLegacy: true,
 	help: ()=>"Provides some mighty useful intel, if I do say so myself.",
-	call: function(params, channel) {
+	Invoke: function(params, channel) {
 		throw "Method prototype no longer supported";
 		let result = [];
 		if (params.length<=0){
@@ -47,7 +47,7 @@ commands["v!help"] = {
 commands["v!modules"] = {
 	_isLegacy: true,
 	help:()=>"List all known modules' status",
-	call: function(){
+	Invoke: function(){
 		let reply = Reply.Say(undefined);
 		reply.embed.title = "⚙️ Modules :";
 		reply.embed.footer = {text:''};

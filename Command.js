@@ -1,3 +1,6 @@
+var Reply = require("./Reply.js");
+let Postman = require("./Postman.js");
+
 class Command 
 {
 	/**
@@ -13,13 +16,15 @@ class Command
 	/**
 	 * Executes the command.
 	 * @param {string} args The sentence passed to the command.
-	 * @returns {string|string[]|object|object[]} The message(s) to be sent. Strings are automatically converted into message object.
+	 * @param {Postman} postman The Postman used for replying.
 	 */
-	call(args) { throw "Undefined Command"; }
+	Invoke(args, postman) {
+		postman.Complete(Reply.Warning(null, "This command has no implementation"));
+	}
 
 	/**
 	 * Provides some mighty useful intel if I say so myself.
-	 * @returns {string} The unformatted help message to display.
+	 * @return {string} The unformatted help message to display.
 	 */
 	help() { return "This command has no help"; }
 

@@ -6,7 +6,7 @@ builtin["v!reload"] = {
 	_isLegacy: true,
 	_isAdmin: true,
 	help: ()=>"Reload all or given modules",
-	call: function(params) {
+	Invoke: function(params) {
 		let result = [];
 		if (params.length<=0)
 			result = Reply.invalid;
@@ -20,7 +20,7 @@ builtin["v!reloadall"] = {
 	_isLegacy: true,
 	_isAdmin: true,
 	help: ()=>"Reload all command modules",
-	call: function(){
+	Invoke: function(){
 		return Violine.reloadLegacyAllLegacy();
 	}
 };

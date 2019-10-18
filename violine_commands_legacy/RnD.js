@@ -6,7 +6,7 @@ RnD = {};
 RnD["v!config"] = {
 	_isLegacy: true,
 	_isAdmin: true,
-	call: function(p){
+	Invoke: function(p){
 		let cmd = p.shift().toLowerCase();
 		
 		if (cmd == "get" && p.length>0){

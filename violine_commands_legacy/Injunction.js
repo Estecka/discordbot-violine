@@ -25,7 +25,7 @@ commands[Violine.mentions[1]] = {
 	_isLegacy: true,
 	_isAdmin: true,
 	help: ()=>"Talk to me",
-	call : function(params){
+	Invoke: function(params){
 		params = params.join(' ').toLowerCase();
 		if (injonctions[params])
 			return injonctions[params]();

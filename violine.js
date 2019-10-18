@@ -15,7 +15,7 @@ var Violine = {
 		let cmdName = words.current;
 		let args = words.remaining;
 
-		let result = this.ProcessCommand(cmdName, args, postman.message.senderId);
+		let result = this.ProcessCommand(cmdName, args, postman);
 
 		if (result && isNaN(result))
 			postman.Complete(result);
@@ -31,15 +31,15 @@ var Violine = {
 	 * Find the corresponding command and executes it.
 	 * @param {string} cmdName The name of the command
 	 * @param {string} args The unprocessed arguments string
-	 * @param {string} senderId The Discord ID of the sender.
+	 * @param {Postman} postman The postman carrying the command
 	 * @returns {object} The anwser to the command, or Null if no matching command was found.
 	 */
-	ProcessCommand: function(cmdName, args, senderId) {
+	ProcessCommand: function(cmdName, args, postman) {
 		for (let i in this.legacyCommands){
 			let cmd = this.legacyCommands[i][cmdName];
 			if (cmd){
 				// Admin handling should be moved into the command Nests
-				if (cmd._isAdmin && !Violine.config.admins.includes(senderId))
+				if (cmd._isAdmin && !Violine.config.admins.includes(postman.message.senderId))
 					result = {embed: {
 						color: 0xff8844,
 						footer: {text: "🚷 Forbidden"}
@@ -48,7 +48,7 @@ var Violine = {
 					if (cmd._isLegacy)
 						args = Interpreter.SplitSentence(args);
 					try{
-						result = cmd.call(args);
+						result = cmd.Invoke(args);
 					}
 					catch(e){
 						result = Reply.Error(null, "Command failed to execute");
