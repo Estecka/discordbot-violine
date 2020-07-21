@@ -38,12 +38,10 @@ function StampMessages (message, channel, silent=false){
 		message = [];
 	}
 
-	//msg.to = channel; // Legacy from Discord.io
 	if (!silent)
 		console.log(msg);
 
 	channel.send(msg)
-	.then(console.log)
 	.catch(console.error);
 
 	return;
@@ -71,12 +69,12 @@ Client.on('ready', function () {
 	console.log("Connected");
 	console.log("Logged in as : "  +Client.user.username +" ("+Client.user.id+")");
 
-	Violine.initialize();
+	Violine.Init();
 });
 
 
 // -- MESSSAGE --
-Client.on('message', function (msg/*user, userID, channelID, message, evt*/) {
+Client.on('message', function (msg) {
 	if (msg.author.id == Client.id) // Ignore own messages
 		return;
 

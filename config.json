@@ -3,8 +3,8 @@
 	"favColor" : 8930559,
 	"admins" : [ "124935323628077056" ],
 
-	"import_commands_legacy" : ["Modules", "Injunction", "Miscellaneous", "RnD", "Yafnag", "built-in"],
+	"command_prefix" : ["v!"],
 
 	"mod_dir" : "./violine_commands_legacy/",
-	"mod_exclude" : []
+	"import_modules" : []
 }

@@ -1,16 +1,22 @@
 var Reply  = require("./Reply.js");
 var Config = require("./config.json");
-var Nest   = require("./Nest.js");
+const Nest = require("./Nest.js");
 var Interpreter = require("./Interpreter.js");
 var Postman = require("./Postman.js");
 
 var Violine = {
+
+	config: Config,
 
 	/**
 	 * @type {Object.<string, Nest>}
 	 */
 	legacyModules: {},
 
+	/**
+	 * @type {Object.<string, Nest>}
+	 */
+	modules: {},
 
 	/**
 	 * Processes a message 
@@ -58,30 +64,60 @@ var Violine = {
 			}
 		}
 		return false;
-	}
+	},
+
+	Init: function(){
+		try {
+			Violine.mentions = [
+				"<@"+Client.id+">",
+				"<@!"+Client.id+">"
+			];
+	
+			this.ReloadAll();
+			
+		}catch(err){
+			console.error("Initialization Failed");
+			console.error(err);
+			return -1;
+		}
+	},
+
+	ReloadAll: function(){
+		console.log("Reloading...");
+		let prevConf = this.config;
+		try {
+			delete require.cache[require.resolve("./config.json")];
+			this.config = require("./config.json");
+		}
+		catch(e){
+			console.error(e);
+			this.config = prevConf;
+			return Reply.Failure(null, "Error in config file");
+		}
+		delete prevConf;
+
+		Client.user.setPresence({
+			activity : { name: this.config.game }
+		});
+
+		for (var name in this.modules)
+			delete this.modules[name];
+
+		let result = [];
+		for (var i in this.config.import_commands_legacy)
+			Violine.reloadLegacy(Violine.config.import_commands_legacy[i]);
+
+		console.log("Done\n");
+	},
 };
-Violine.config = Config;
 
 // --------------
 // Legacy methods
 // --------------
-Violine.initialize = function(){
-	try {
-		Violine.mentions = [
-			"<@"+Client.id+">",
-			"<@!"+Client.id+">"
-		];
-
-		Violine.reloadAllLegacy();
-		
-	}catch(err){
-		console.error("Initialization Failed");
-		console.error(err);
-		return -1;
-	}
-};
 
 Violine.Send = function(messages, channel){
+	console.warn("Violine.Send() is deprecated.\n");
+	return;
 	if (!Array.isArray(messages))
 		messages = [messages];
 	let msg = messages.shift();
@@ -111,6 +147,8 @@ Violine.Send = function(messages, channel){
  * @param {string} moduleName 
  */
 Violine.reloadLegacy = function(moduleName){
+	console.warn("Violine.reloadLegacy() is deprecated.\n");
+	return;
 	let path = "./violine_commands_legacy/"+moduleName+".js"
 	console.log("Loading "+path);
 	try {
@@ -129,28 +167,7 @@ Violine.reloadLegacy = function(moduleName){
  * Load/Reload all modules and config.
  */
 Violine.reloadAllLegacy = function(){
-	console.log("Reloading...");
-	try {
-		delete require.cache[require.resolve("./config.json")];
-		Violine.config = require("./config.json")
-	}
-	catch(e){
-		console.error(e);
-		return Reply.Failure(null, "Error in config file");
-	}
-
-	Client.user.setPresence({
-		activity : { name: Violine.config.game }
-	});
-
-	for (var name in Violine.legacyModules)
-		delete Violine.legacyModules[name];
-
-	let result = [];
-	for (var i in Violine.config.import_commands_legacy)
-		Violine.reloadLegacy(Violine.config.import_commands_legacy[i]);
-
-	console.log("Done\n");
+	console.warn("Violine.reloadAllLegacy() is deprecated.\n");
 };
 
 global.Violine = Violine;
