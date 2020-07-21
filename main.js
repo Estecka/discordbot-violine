@@ -11,24 +11,12 @@ process.on("uncaughtException", function(err){
 // Adds the root path to the module listing
 module.paths.push("/");
 
-var Discord = require('discord.io');
-var logger  = require('winston');
+var Discord = require('discord.js');
 var auth    = require('./auth.json');
-
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
 
 // Initialize Discord Client
 var Client =
-global.Client = new Discord.Client({
-   token: auth.token,
-   autorun: true
-});
-
+global.Client = new Discord.Client();
 
 var Reply   = require("./Reply.js");
 var Postman = require("./Postman.js");
@@ -36,8 +24,8 @@ var Violine = require('./violine.js');
 
 /**
  * Ships messages to the appropriate destination.
- * @param {object|object[]} message A single or an Array of preformatted message objects
- * @param {string} channel The ID of the destination channel.
+ * @param {Reply|Reply[]} message A single or an Array of preformatted message objects
+ * @param {Discord.TextChannel|Discord.DMChannel|Discord.NewsChannel} channel The ID of the destination channel.
  * @param {boolean} silent if true, the message will not be logged.
  */
 function StampMessages (message, channel, silent=false){
@@ -50,9 +38,15 @@ function StampMessages (message, channel, silent=false){
 		message = [];
 	}
 
-	msg.to = channel;
+	//msg.to = channel; // Legacy from Discord.io
 	if (!silent)
 		console.log(msg);
+
+	channel.send(msg)
+	.then(console.log)
+	.catch(console.error);
+
+	return;
 
 	Client.sendMessage(msg, function(error, response) {
 		if (message.length>0)
@@ -73,31 +67,33 @@ function StampMessages (message, channel, silent=false){
 
 
 // -- READY --
-Client.on('ready', function (evt) {
-    console.log("Connected");
-    console.log("Logged in as : "+Client.username+" ("+Client.id+")");
+Client.on('ready', function () {
+	console.log("Connected");
+	console.log("Logged in as : "  +Client.user.username +" ("+Client.user.id+")");
 
-    Violine.initialize();
+	Violine.initialize();
 });
 
 
 // -- MESSSAGE --
-Client.on('message', function (user, userID, channelID, message, evt) {
-    if (userID == Client.id) // Ignore own messages
-        return;
-	
-	let postman = new Postman(message, userID, channelID);
+Client.on('message', function (msg/*user, userID, channelID, message, evt*/) {
+	if (msg.author.id == Client.id) // Ignore own messages
+		return;
+
+	let postman = new Postman(msg.content, msg.author.id, msg.channel.id);
 	postman.onSuccess = (reply) => {
-		console.log("> " + message);
-		StampMessages(reply, channelID);
+		console.log("> " + msg.content);
+		StampMessages(reply, msg.channel);
 		console.log('');
 	}
 	postman.onError = (error) => {
-		console.log("> " + message);
+		console.log("> " + msg.content);
 		console.error(error);
-		StampMessages(Reply.error, channelID, true);
+		StampMessages(Reply.error, msg.channel, true);
 		console.log('');
 	}
 
 	Violine.ProcessSentence(postman);
 });
+
+Client.login(auth.token);

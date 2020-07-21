@@ -139,10 +139,8 @@ Violine.reloadAllLegacy = function(){
 		return Reply.Failure(null, "Error in config file");
 	}
 
-	Client.setPresence({
-		game:{
-			name: Violine.config.game
-		}
+	Client.user.setPresence({
+		activity : { name: Violine.config.game }
 	});
 
 	for (var name in Violine.legacyModules)
