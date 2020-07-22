@@ -42,24 +42,16 @@ function StampMessages (message, channel, silent=false){
 		console.log(msg);
 
 	channel.send(msg)
-	.catch(console.error);
+	.catch((err) =>{
+		console.error(err);
+		channel.send(Reply.socialError).catch(console.error);
+	});
 
 	return;
 
 	Client.sendMessage(msg, function(error, response) {
 		if (message.length>0)
 			setTimeout(()=>StampMessages(message, channel, silent), 1000);
-		if (error) {
-			console.warn(error)
-			Client.sendMessage({
-				to: channel,
-				embed:{
-					color: 0xff8800,
-					description: "⛔ Social error"
-				},
-				typing: type
-			});
-		}
 	});
 }
 
@@ -78,7 +70,7 @@ Client.on('message', function (msg) {
 	if (msg.author.id == Client.user.id) // Ignore own messages
 		return;
 
-	let postman = new Postman(msg.content, msg.author.id, msg.channel.id);
+	let postman = new Postman(msg);
 	postman.onSuccess = (reply) => {
 		console.log("> " + msg.content);
 		StampMessages(reply, msg.channel);

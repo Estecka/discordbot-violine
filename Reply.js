@@ -50,7 +50,7 @@ class Reply
 	/**
 	 * @type {string} The body of the message;
 	 */
-	message;
+	content;
 
 	/**
 	 * @type {Embed}
@@ -67,7 +67,7 @@ class Reply
 	 */
 	static RawTell(message) {
 		let reply = new Reply();
-		reply.message = message;
+		reply.content = message;
 		return reply;
 	}
 	/**
@@ -198,7 +198,7 @@ class Reply
 	 */
 	static get SampleReply() {
 		return {
-			message: "Message",
+			content: "Message",
 			embed: {
 				author: {
 					name: "<-author.icon_url | Author.name",

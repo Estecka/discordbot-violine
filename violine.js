@@ -1,4 +1,5 @@
 const Reply  = require("./Reply.js");
+const Command = require("./Command.js");
 var Config = require("./config.json");
 const Interpreter = require("./Interpreter.js");
 const Postman = require("./Postman.js");
@@ -8,28 +9,25 @@ var Violine = {
 	config: Config,
 
 	/**
-	 * @type {Object.<string, Nest>}
+	 * @type {Object.<string, Command[]>}
 	 */
 	modules: {},
 
 	/**
 	 * Processes a message 
 	 * @param {Postman} postman The Postman object that carries the message
-	 * @return {Reply|Reply[]} The answer, or an array of answers.
 	 */
 	ProcessSentence: function(postman) {
 		let start = 0;
 		while(Interpreter.IsWhitespace(postman.message.content[start]))
 			start++;
-		for(prefix of this.config.command_prefixes.concat(this.mentions)) {
+		
+		let prefixesArray = this.config.command_prefixes.concat(this.mentions)
+		for(prefix of prefixesArray) {
 			if(postman.message.content.startsWith(prefix, start))
 			{
-				let words = Interpreter.ShiftSentence(postman.message.content.substr(prefix.length));
-				let cmdName = words.current;
-				args = words.remaining;
-		
-				let isCommand = this.ProcessCommand(cmdName, args, postman);
-		
+				let args = postman.message.content.substr(prefix.length) //Remove the prefix from the command.
+				let isCommand = this.RunShell(args, postman);
 				if (isCommand)
 					return;
 			}
@@ -43,29 +41,36 @@ var Violine = {
 
 	/**
 	 * Find the corresponding command and executes it.
-	 * @param {string} cmdName The name of the command
 	 * @param {string} args The unprocessed arguments string
 	 * @param {Postman} postman The postman carrying the command
 	 * @return {boolean} `true` if a command was found.
 	 */
-	ProcessCommand: function(cmdName, args, postman) {
-		let r = false;
+	RunShell: function(sentence, postman) {
+		let sudo = this.config.admins.includes(postman.message.author.id);
+		let args = Interpreter.ShiftSentence(sentence);
+		
 		for (let mod in this.modules)
 		for (let cmd in this.modules[mod])
-		if (cmd == cmdName)
+		if (cmd == args.current)
 		{
-			try {
-				let r = this.modules[mod][cmd].main(args, postman);
-				if (r){
-					postman.Complete(r);
+			if (!sudo && this.modules[mod][cmd]._isRoot) {
+				postman.Complete(Reply.forbidden);
+			}
+			else {
+				try {
+					let r = this.modules[mod][cmd].main(args.remaining, postman);
+					if (r){
+						postman.Complete(r);
+						return true;
+					}
+				}
+				catch(e){
+					console.error(e);
+					postman.Complete(Reply.Error(null, "Command failed to execute"));
 					return true;
 				}
 			}
-			catch(e){
-				console.error(e);
-				postman.Complete(Reply.Error(null, "Command failed to execute"));
-				return true;
-			}
+			return true;
 		}
 		return false;
 	},

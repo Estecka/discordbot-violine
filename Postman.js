@@ -30,16 +30,10 @@ class Postman
 	onComplete = null;
 
 	/**
-	 * @param {string} content The body of the message.
-	 * @param {string} senderId The ID of the message sender.
-	 * @param {string} channelId The ID of the channel the message was sent to.
+	 * @param {Message} message The full message object.
 	 */
 	constructor(message, senderId, channelId){
-		this.message = {
-			content:   message,
-			senderId:  senderId,
-			channelId: channelId,
-		};
+		this.message = message;
 	}
 
 	/**
