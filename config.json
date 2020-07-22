@@ -11,6 +11,7 @@
 	"mod_dir" : "./violine_modules/",
 	"import_modules" : [
 		"root", 
+		"modules",
 		"miscellaneous"
 	]
 }

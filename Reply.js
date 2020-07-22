@@ -57,6 +57,26 @@ class Reply
 	 */
 	embed;
 
+	/**
+	 * @param {string} name 
+	 * @param {value} value 
+	 * @param {boolean} inline 
+	 * @return {Field}
+	 */
+	AddField(name, value, inline=false){
+		if (!this.embed)
+			this.embed = {};
+		if (!this.embed.fields)
+			this.embed.fields = [];
+		let f = {
+			name: name,
+			value: value,
+			inline: inline,
+		};
+		this.embed.fields.push(f);
+		return f;
+	}
+
 	/// -------------------
 	/// PRESET CONSTRUCTORS
 	/// -------------------
@@ -78,6 +98,13 @@ class Reply
 	static Say(message){
 		let reply = new Reply();
 		reply.embed = DefaultEmbed();
+		reply.embed.description = message;
+		return reply;
+	}
+	static Title(title, message=null){
+		let reply = new Reply();
+		reply.embed = DefaultEmbed();
+		reply.embed.title
 		reply.embed.description = message;
 		return reply;
 	}
@@ -135,7 +162,7 @@ class Reply
 		return { 
 			embed: {
 				color: 0x00ff00,
-				description: "✔️ Success",
+				description: "✅ Success",
 			}
 		};
 	};

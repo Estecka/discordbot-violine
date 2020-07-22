@@ -136,17 +136,21 @@ var Violine = {
 		console.log("Done\n");
 	},
 
+	/**
+	 * @param {string} moduleName 
+	 * @return {boolean} Whether the module was succesfully reloaded.
+	 */
 	Reload: function(moduleName){
 		let path = this.config.mod_dir + moduleName + ".js"
 		console.log("Loading "+path);
 		try {
 			delete require.cache[require.resolve(path)];
 			Violine.modules[moduleName] = require(path);
-			return 0;
+			return true;
 		} catch(e){
 			console.error("Module failed to load: "+moduleName+" ("+path+")\n");
 			console.error(e);
-			return -1;
+			return false;
 		}
 	},
 };
@@ -180,21 +184,6 @@ Violine.Send = function(messages, channel){
 			})
 		}
 	})
-};
-
-/**
- * Load/Reload a given module.
- * @param {string} moduleName 
- */
-Violine.reloadLegacy = function(moduleName){
-	console.warn("Violine.reloadLegacy() is deprecated.\n");
-};
-
-/**
- * Load/Reload all modules and config.
- */
-Violine.reloadAllLegacy = function(){
-	console.warn("Violine.reloadAllLegacy() is deprecated.\n");
 };
 
 global.Violine = Violine;
