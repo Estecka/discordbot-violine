@@ -23,22 +23,19 @@ var Interpreter =
 	ShiftSentence: function(sentence){
 		let result = {};
 		let length = sentence.length;
+		let start = 0;
 		let limit = 0;
 
-		for (let i=0; i<length; i++) {
-			if (this.IsWhitespace(sentence[i])) {
-				limit = i;
+		for (start=0; start<length; start++)
+			if (!this.IsWhitespace(sentence[start]))
 				break;
-			}
-		}
-		result.current = sentence.substring(0, limit);
-		limit++;
-		for (let i=limit; i<length; i++){
-			if (!this.IsWhitespace(sentence[i])){
-				limit = i;
+
+		for (limit=start + 1; limit<length; limit++)
+			if (this.IsWhitespace(sentence[limit]))
 				break;
-			}
-		}
+
+		result.current = sentence.substring(start, limit);
+
 		if (limit < length)
 			result.remaining = sentence.substring(limit);
 		else

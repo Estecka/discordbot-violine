@@ -1,6 +1,5 @@
 const Reply  = require("./Reply.js");
 var Config = require("./config.json");
-const Nest = require("./Nest.js");
 const Interpreter = require("./Interpreter.js");
 const Postman = require("./Postman.js");
 
@@ -25,19 +24,14 @@ var Violine = {
 		for(prefix of this.config.command_prefixes.concat(this.mentions)) {
 			if(postman.message.content.startsWith(prefix, start))
 			{
-				let words = Interpreter.ShiftSentence(postman.message.content);
+				let words = Interpreter.ShiftSentence(postman.message.content.substr(prefix.length));
 				let cmdName = words.current;
-				let args = words.remaining;
+				args = words.remaining;
 		
-				let result = this.ProcessCommand(cmdName, args, postman);
+				let isCommand = this.ProcessCommand(cmdName, args, postman);
 		
-				if (result) {
-					if (isNaN(result))
-						postman.Complete(result);
-					else
-						postman.Complete(Reply.Error(NULL, result))
+				if (isCommand)
 					return;
-				}
 			}
 		}
 
@@ -56,13 +50,16 @@ var Violine = {
 	 */
 	ProcessCommand: function(cmdName, args, postman) {
 		let r = false;
-		for (let m in this.legacyModules){
-			let nest = this.legacyModules[m];
-
-			try{
-				r = nest.Run(cmdName, args, postman);
-				if (r)
+		for (let mod in this.modules)
+		for (let cmd in this.modules[mod])
+		if (cmd == cmdName)
+		{
+			try {
+				let r = this.modules[mod][cmd].main(args, postman);
+				if (r){
+					postman.Complete(r);
 					return true;
+				}
 			}
 			catch(e){
 				console.error(e);
@@ -111,10 +108,24 @@ var Violine = {
 			delete this.modules[name];
 
 		let result = [];
-		for (var i in this.config.import_commands_legacy)
-			Violine.reloadLegacy(Violine.config.import_commands_legacy[i]);
+		for (var i in this.config.import_modules)
+			Violine.Reload(this.config.import_modules[i]);
 
 		console.log("Done\n");
+	},
+
+	Reload: function(moduleName){
+		let path = this.config.mod_dir + moduleName + ".js"
+		console.log("Loading "+path);
+		try {
+			delete require.cache[require.resolve(path)];
+			Violine.modules[moduleName] = require(path);
+			return 0;
+		} catch(e){
+			console.error("Module failed to load: "+moduleName+" ("+path+")\n");
+			console.error(e);
+			return -1;
+		}
 	},
 };
 
@@ -155,19 +166,6 @@ Violine.Send = function(messages, channel){
  */
 Violine.reloadLegacy = function(moduleName){
 	console.warn("Violine.reloadLegacy() is deprecated.\n");
-	return;
-	let path = "./violine_commands_legacy/"+moduleName+".js"
-	console.log("Loading "+path);
-	try {
-		delete require.cache[require.resolve(path)];
-		Violine.legacyModules[moduleName] = new Nest(require(path));
-		return 0;
-	} catch(e){
-		console.error("Module failed to load: "+moduleName+" ("+path+")");
-		console.error(e);
-
-		return -1;
-	}
 };
 
 /**

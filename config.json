@@ -5,6 +5,6 @@
 
 	"command_prefixes" : ["v!"],
 
-	"mod_dir" : "./violine_commands_legacy/",
-	"import_modules" : []
+	"mod_dir" : "./violine_modules/",
+	"import_modules" : ["root"]
 }
