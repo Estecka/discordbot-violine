@@ -104,7 +104,7 @@ class Reply
 	static Title(title, message=null){
 		let reply = new Reply();
 		reply.embed = DefaultEmbed();
-		reply.embed.title
+		reply.embed.title = title;
 		reply.embed.description = message;
 		return reply;
 	}

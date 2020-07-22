@@ -12,6 +12,7 @@
 	"import_modules" : [
 		"root", 
 		"modules",
+		"servers",
 		"miscellaneous"
 	]
 }
