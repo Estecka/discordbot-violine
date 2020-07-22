@@ -15,8 +15,7 @@ const Discord = require('discord.js');
 var auth    = require('./auth.json');
 
 // Initialize Discord Client
-var Client =
-global.Client = new Discord.Client();
+var client = new Discord.Client();
 
 const Reply   = require("./Reply.js");
 const Postman = require("./Postman.js");
@@ -52,17 +51,17 @@ function StampMessages (messages, channel, silent=false){
 
 
 // -- READY --
-Client.on('ready', function () {
+client.on('ready', function () {
 	console.log("Connected");
-	console.log("Logged in as : "  +Client.user.username +" ("+Client.user.id+")");
+	console.log("Logged in as : "  +client.user.username +" ("+client.user.id+")");
 
-	Violine.Init();
+	Violine.Init(client);
 });
 
 
 // -- MESSSAGE --
-Client.on('message', function (msg) {
-	if (msg.author.id == Client.user.id) // Ignore own messages
+client.on('message', function (msg) {
+	if (msg.author.id == client.user.id) // Ignore own messages
 		return;
 
 	let postman = new Postman(msg);
@@ -81,4 +80,4 @@ Client.on('message', function (msg) {
 	Violine.ProcessSentence(postman);
 });
 
-Client.login(auth.token);
+client.login(auth.token);

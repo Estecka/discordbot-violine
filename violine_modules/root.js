@@ -1,3 +1,4 @@
+const Violine = require("../violine");
 const Reply = require("../Reply");
 const Command = require("../Command");
 const Interpreter = require("../Interpreter.js");
@@ -10,6 +11,20 @@ var commands = {
 		_isRoot: true,
 		main: function(args) {
 			return Reply.RawTell(args);
+		},
+	},
+
+	exit: {
+		_isRoot: true,
+		main(){
+			setTimeout(
+				function(){
+					Violine.client.destroy();
+					process.exit();
+				},
+				500
+			);
+			return "♪~";
 		},
 	},
 	
@@ -48,5 +63,6 @@ var commands = {
 };
 
 commands.say = commands.echo;
+commands.sleep = commands.exit;
 
 module.exports = commands;

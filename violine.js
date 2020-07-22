@@ -3,8 +3,14 @@ const Command = require("./Command.js");
 var Config = require("./config.json");
 const Interpreter = require("./Interpreter.js");
 const Postman = require("./Postman.js");
+const Discord = require("discord.js");
 
 var Violine = {
+
+	/**
+	 * @type {Discord.Client}
+	 */
+	client: null,
 
 	config: Config,
 
@@ -73,11 +79,15 @@ var Violine = {
 		return false;
 	},
 
-	Init: function(){
+	/**
+	 * @param {Discord.Client} client 
+	 */
+	Init: function(client){
+		this.client = client;
 		try {
 			this.mentions = [
-				"<@"+Client.user.id+">",
-				"<@!"+Client.user.id+">"
+				"<@"+client.user.id+">",
+				"<@!"+client.user.id+">"
 			];
 	
 			this.ReloadAll();
@@ -103,7 +113,7 @@ var Violine = {
 		}
 		delete prevConf;
 
-		Client.user.setPresence({
+		this.client.user.setPresence({
 			activity : { name: this.config.game }
 		});
 

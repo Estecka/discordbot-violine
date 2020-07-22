@@ -7,17 +7,6 @@ injonctions["sing"] = function(){
 		song += (Math.random()>0.5) ? '♫' : '♪';
 	return Reply.Say(song);
 };
-injonctions["go to sleep"] = function(){
-	setTimeout(
-		function(){
-			Client.disconnect();
-			process.exit();
-		},
-		500
-	);
-	return Reply.Say("♪~");
-};
-
 
 var commands = {};
 commands[Violine.mentions[0]] = 
