@@ -1,78 +1,181 @@
-var Reply = require("./messages.js");
-var fs = require("fs");
+const Reply  = require("./Reply.js");
+const Command = require("./Command.js");
+var Config = require("./config.json");
+const Interpreter = require("./Interpreter.js");
+const Postman = require("./Postman.js");
+const Discord = require("discord.js");
 
-global.Violine = {};
-Violine.config = require("./config.json");
-Violine.commands = {};
+var Violine = {
 
-Violine.initialize = function(){
-	try {
-		Violine.mentions = [
-			"<@"+Bot.id+">",
-			"<@!"+Bot.id+">"
-		];
+	/**
+	 * @type {Discord.Client}
+	 */
+	client: null,
 
-		Violine.reloadAll();
+	config: Config,
+
+	/**
+	 * @type {Object.<string, Command[]>}
+	 */
+	modules: {},
+
+	SetMaintenance: function(value){
+		this.config.maintenance_mode = value;
+		this.client.user.setPresence({
+			status: value ? "dnd" : "online",
+			activity : { 
+				name: value ? "In Maintenance" : this.config.status,
+				type: "PLAYING",
+			},
+		});
+	},
+
+	/**
+	 * Processes a message 
+	 * @param {Postman} postman The Postman object that carries the message
+	 */
+	ProcessSentence: function(postman) {
+		let start = 0;
+		while(Interpreter.IsWhitespace(postman.message.content[start]))
+			start++;
 		
-	}catch(err){
-		console.error("Initialization Failed");
-		console.error(err);
-		return -1;
-	}
-};
-
-Violine.parse = function(message){
-	message = message.split(' ');
-	for (var i=0; i<message.length; i++){
-		if (!message[i]){
-			message.splice(i,1);
-			i--;
-		}
-	}
-	return message;
-};
-
-
-/*Violine.process = function(param, channel){
-	try {
-		cmd = Violine.commands;
-		while (param.length>0 && cmd.call === undefined){
-			if (cmd[param[0]] != undefined)
-				cmd = cmd[param.shift()];
-			else
-				return 0;
-		}
-		
-		if (cmd.call !== undefined){
-			return cmd.call(param);
-		}
-
-	}catch(e){
-		console.error(e);
-		return {
-			embed : {
-				color: 0xff2200,
-				description: "Command failed to execute"
+		let prefixesArray = this.config.command_prefixes.concat(this.mentions)
+		for(prefix of prefixesArray) {
+			if(postman.message.content.startsWith(prefix, start))
+			{
+				let args = postman.message.content.substr(prefix.length) //Remove the prefix from the command.
+				let isCommand = this.RunShell(args, postman);
+				if (isCommand)
+					return;
 			}
-		};
-	}
-};/**/
+		}
+
+		// If not a command, hum to your name.
+		if(postman.message.content.includes(this.mentions[0])
+		|| postman.message.content.includes(this.mentions[1])) 
+			postman.Complete("♪");
+	},
+
+	/**
+	 * Find the corresponding command and executes it.
+	 * @param {string} args The unprocessed arguments string
+	 * @param {Postman} postman The postman carrying the command
+	 * @return {boolean} `true` if a command was found.
+	 */
+	RunShell: function(sentence, postman) {
+		let args = Interpreter.ShiftSentence(sentence);
+		
+		for (let mod in this.modules)
+		for (let cmd in this.modules[mod])
+		if (cmd == args.current)
+		{
+			let sudo = this.config.admins.includes(postman.message.author.id);
+			if (!sudo && this.modules[mod][cmd]._isRoot) {
+				postman.Complete(Reply.forbidden);
+			}
+			else {
+				try {
+					let r = this.modules[mod][cmd].main(args.remaining, postman);
+					if (r){
+						postman.Complete(r);
+					}
+				}
+				catch(e){
+					console.error(e);
+					postman.Complete(Reply.Error(null, "Command failed to execute"));
+				}
+			}
+			return true;
+		}
+		return false;
+	},
+
+	/**
+	 * @param {Discord.Client} client 
+	 */
+	Init: function(client){
+		this.client = client;
+		try {
+			this.mentions = [
+				"<@"+client.user.id+">",
+				"<@!"+client.user.id+">"
+			];
+	
+			this.ReloadAll();
+			
+		}catch(err){
+			console.error("Initialization Failed");
+			console.error(err);
+			return -1;
+		}
+	},
+
+	ReloadAll: function(){
+		console.log("Reloading...");
+		let prevConf = this.config;
+		try {
+			delete require.cache[require.resolve("./config.json")];
+			this.config = require("./config.json");
+		}
+		catch(e){
+			console.error(e);
+			this.config = prevConf;
+			return Reply.Failure(null, "Error in config file");
+		}
+		delete prevConf;
+
+		this.SetMaintenance(this.config.maintenance_mode);
+
+		for (var name in this.modules)
+			delete this.modules[name];
+
+		let result = [];
+		for (var i in this.config.import_modules)
+			Violine.Reload(this.config.import_modules[i]);
+
+		console.log("Done\n");
+	},
+
+	/**
+	 * @param {string} moduleName 
+	 * @return {boolean} Whether the module was succesfully reloaded.
+	 */
+	Reload: function(moduleName){
+		let path = this.config.mod_dir + moduleName + ".js"
+		console.log("Loading "+path);
+		try {
+			delete require.cache[require.resolve(path)];
+			Violine.modules[moduleName] = require(path);
+			return true;
+		} catch(e){
+			console.error("Module failed to load: "+moduleName+" ("+path+")\n");
+			console.error(e);
+			return false;
+		}
+	},
+};
+
+// --------------
+// Legacy methods
+// --------------
 
 Violine.Send = function(messages, channel){
+	console.warn("Violine.Send() is deprecated.\n");
+	return;
 	if (!Array.isArray(messages))
 		messages = [messages];
 	let msg = messages.shift();
 	if (channel)
 		msg.to = channel;
 
-	Bot.sendMessage(msg, (error, response)=>{
+	Client.sendMessage(msg, (error, response)=>{
 		if (messages.length>0)
 			setTimeout(()=>Violine.Send(messages, channel), 1000);
 		if (error){
 			console.warn("Message caused an error : ");
 			console.warn(msg);
 			console.warn(error);
-			Bot.sendMessage({
+			Client.sendMessage({
 				to: msg.to,
 				embed: {
 					color: 0xff8800,
@@ -83,47 +186,5 @@ Violine.Send = function(messages, channel){
 	})
 };
 
-Violine.reload = function(moduleName){
-	let path = "./violine_commands/"+moduleName+".js"
-	console.log("Loading "+path);
-	try {
-		delete require.cache[require.resolve(path)];
-		Violine.commands[moduleName] = require(path);
-	
-		return Reply.embed("✔️ Success: "+moduleName, 0x22ff44, true);
-	} catch(e){
-		console.error("Module failed to load: "+moduleName+" ("+path+")");
-		console.error(e);
-		return Reply.embed("❌ Failure: "+moduleName, 0xFF4422, true);
-	}
-};
-
-Violine.reloadAll = function(){
-	console.log("Reloading...");
-	try {
-		delete require.cache[require.resolve("./config.json")];
-		Violine.config = require("./config.json")
-	}
-	catch(e){
-		console.error(e);
-		return Reply.Failure(null, "Error in config file");
-	}
-
-	Bot.setPresence({
-		game:{
-			name: Violine.config.game
-		}
-	});
-
-	let result = [];
-	Violine.commands = {};
-	for (var i in Violine.config.import_commands)
-		result.push(Violine.reload(Violine.config.import_commands[i]));
-	
-	Violine.commands["built-in"] = require("./built-in.js");
-
-	console.log("Done\n");
-	return result;
-};
-
+global.Violine = Violine;
 module.exports = Violine;

@@ -1,3 +1,4 @@
+// Cause any uncaught error to be displayed on the console window for 5mn.
 process.on("uncaughtException", function(err){
     console.log("\n /!\\ FATAL ERROR /!\\ \n Shutting down in 5mn\n");
     console.log(err);
@@ -6,121 +7,82 @@ process.on("uncaughtException", function(err){
         300000
     );
 });
-/*
-for(var i=0; i<10; i++){
-	let time=0;
-	setTimeout(
-		function(){console.log(i);},
-		time
-	);
-	time+= 1000;
-}
-*/
 
+// Adds the root path to the module listing
 module.paths.push("/");
 
-var Discord = require('discord.io');
-var logger  = require('winston');
+const Discord = require('discord.js');
 var auth    = require('./auth.json');
-var Reply   = require("./messages.js");
 
-// Configure logger settings
-logger.remove(logger.transports.Console);
-logger.add(new logger.transports.Console, {
-    colorize: true
-});
-logger.level = 'debug';
+// Initialize Discord Client
+var client = new Discord.Client();
 
-// Initialize Discord Bot
-var Bot =
-global.Bot = new Discord.Client({
-   token: auth.token,
-   autorun: true
-});
+const Reply   = require("./Reply.js");
+const Postman = require("./Postman.js");
+const Violine = require('./violine.js');
 
-var Violine = 
-global.Violine = require('./violine.js');
+/**
+ * Ships messages to the appropriate destination.
+ * @param {Reply|Reply[]} messages A single or an Array of preformatted message objects
+ * @param {Discord.TextChannel|Discord.DMChannel|Discord.NewsChannel} channel The ID of the destination channel.
+ * @param {boolean} silent if true, the message will not be logged.
+ */
+function StampMessages (messages, channel, silent=false){
+	if (!Array.isArray(messages))
+		messages = [messages];
+
+	let promise = null;
+	for (let msg of messages)
+	{
+		console.log(msg);
+		if (!promise)
+			promise = channel.send(msg);
+		else
+			promise = promise.then(() => channel.send(msg));
+	}
+
+	promise.catch((err) => {
+		console.error(err);
+		channel.send(Reply.socialError);
+	});
+
+	return promise;
+}
 
 
 // -- READY --
-Bot.on('ready', function (evt) {
-    console.log("Connected");
-    console.log("Logged in as : "+Bot.username+" ("+Bot.id+")");
+client.on('ready', function () {
+	console.log("Connected");
+	console.log("Logged in as : "  +client.user.username +" ("+client.user.id+")");
 
-    Violine.initialize();
+	Violine.Init(client);
 });
 
 
 // -- MESSSAGE --
-Bot.on('message', function (user, userID, channelID, message, evt) {
-    if (userID == Bot.id) // Ignore own messages
-        return;
-    var result = 0;
-    var words = Violine.parse(message);
-    var cmdName = words[0];
-    var params = words.slice(1);
+client.on('message', function (msg) {
+	// Ignore own messages
+	if (msg.author.id == client.user.id)
+		return;
 
-    for (var i in Violine.commands){
-        let cmd = Violine.commands[i][cmdName];
-        if (cmd){
+	// Ignores everyone in maintenance mode
+	if (Violine.config.maintenance_mode && !Violine.config.admins.includes(msg.author.id))
+		return;
 
-            if (cmd._admin && !Violine.config.admins.includes(userID))
-                result = {embed: {
-                    color: 0xff8844,
-                    footer: {text: "🚷 403 Forbidden"}
-                }};
-            else {
-                params
-                try{
-                    result = cmd.call(params, channelID);
-                }
-                catch(e){
-                    result = Reply.Error(null, "Command failed to execute");
-                    console.error(e);
-                }
-            }
-            break;
-        }
-    }
+	let postman = new Postman(msg);
+	postman.onSuccess = (reply) => {
+		console.log("> " + msg.content);
+		StampMessages(reply, msg.channel);
+		console.log('');
+	}
+	postman.onError = (error) => {
+		console.log("> " + msg.content);
+		console.error(error);
+		StampMessages(Reply.error, msg.channel, true);
+		console.log('');
+	}
 
-    let stampMsg = function(msg, channel, type=false){
-        msg.to = channel;
-        console.log (msg);
-
-        Bot.sendMessage(msg, function(error, response){
-            if (error) {
-                console.warn(error)
-                Bot.sendMessage({
-                    to: channel,
-                    embed:{
-                        color: 0xff8800,
-                        description: "⛔ A message was denied by Discord"
-                    },
-                    typing: type
-                });
-            }
-        });
-    }
-
-    console.log(result);
-    if (result){
-        console.log ("I : "+message);
-        if (Array.isArray(result)){
-            let time = 0;
-            for (var i in result){
-                stampMsg(result[i], channelID, true);
-            }
-        }
-        else if (isNaN(result))
-            Violine.Send(result, channelID);
-
-            //stampMsg(result, channelID);
-        console.log('');
-    }
-    else if(words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1])) {
-        Bot.sendMessage({
-            to: channelID,
-            message: "♪"
-        });
-    }
+	Violine.ProcessSentence(postman);
 });
+
+client.login(auth.token);

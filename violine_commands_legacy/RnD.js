@@ -1,15 +1,16 @@
 var Violine = require("../violine.js");
-var Reply = require("../messages.js");
+var Reply = require("../Reply.js");
 
 RnD = {};
 
 RnD["v!config"] = {
-	_admin: true,
-	call: function(p){
+	_isLegacy: true,
+	_isAdmin: true,
+	Invoke: function(p){
 		let cmd = p.shift().toLowerCase();
 		
 		if (cmd == "get" && p.length>0){
-			let r = Reply.embed("");
+			let r = Reply.Say('');
 			r.embed.title = "📋 Config"
 			for (let i in p){
 				if (Violine.config.hasOwnProperty(p[i]))
@@ -31,7 +32,7 @@ RnD["v!config"] = {
 				default: return Reply.Warning(null, "String values are not supported yet.");				
 			}
 			Violine.config[key] = value;
-			let r = Reply.embed("");
+			let r = Reply.Say('');
 			r.embed.description = key +" was set to "+typeof(value)+" "+value;
 			r.embed.footer = { text: "Changes made at runtime are temporary."}
 			return r;

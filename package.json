@@ -1,13 +1,11 @@
 {
 	"name": "discordbot-violine",
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"description": "Estecka's own makeshift maiden",
 	"main": "main.js",
 	"author": "Estecka",
-
 	"dependencies": {
-		"discord.io": 	"^2.5.3",
-		"winston": 		"^3.0.0",
-		"xmlrpc": 		"^1.3.2"
+		"discord.js": "^12.2.0",
+		"xmlrpc": "^1.3.2"
 	}
 }

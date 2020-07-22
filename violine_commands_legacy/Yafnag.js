@@ -1,6 +1,6 @@
 var Violine = require("../violine.js");
 var xmlrpc = require("xmlrpc");
-var Reply = require("../messages.js");
+var Reply = require("../Reply.js");
 
 
 var client = xmlrpc.createSecureClient({
@@ -10,9 +10,11 @@ var client = xmlrpc.createSecureClient({
 
 yafnag = {};
 yafnag["v!yafnag"] = {
+	_isLegacy: true,
 	help: ()=>"Yet Another Fantasy Name Generator\n"
 	+ "`v!Yafnag [sizeMin] [sizeMax] [amount]`",
-	call: function (params, channel) {
+	Invoke: function (params, channel) {
+		throw "Method prototype no longer supported.";
 		if (params.length<3)
 			return Reply.invalid;
 		
@@ -32,7 +34,7 @@ yafnag["v!yafnag"] = {
 				Violine.Send(Reply.Error("Dicelog returned an error"), channel);
 			}
 			else{
-				let r = Reply.embed();
+				let r = Reply.Say(undefined);
 				r.embed.author = { 
 					name: "📜 Yafnag",
 					url: "http://dicelog.com/yafnag",
