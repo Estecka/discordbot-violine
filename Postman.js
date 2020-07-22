@@ -1,11 +1,5 @@
-let Reply = require("./Reply.js");
-
-/**
- * @typedef Message
- * @property {string} content The body of the message.
- * @property {string} senderId The ID of the message sender.
- * @property {string} channelId The ID of the channel the message was sent to.
- */
+const Reply = require("./Reply.js");
+const { Message } = require("discord.js");
 
 /**
  * A "Promise" object that carries a message, and provides an interface to answer.

@@ -1,17 +1,12 @@
-var Reply  = require("./Reply.js");
+const Reply  = require("./Reply.js");
 var Config = require("./config.json");
 const Nest = require("./Nest.js");
-var Interpreter = require("./Interpreter.js");
-var Postman = require("./Postman.js");
+const Interpreter = require("./Interpreter.js");
+const Postman = require("./Postman.js");
 
 var Violine = {
 
 	config: Config,
-
-	/**
-	 * @type {Object.<string, Nest>}
-	 */
-	legacyModules: {},
 
 	/**
 	 * @type {Object.<string, Nest>}
@@ -21,23 +16,35 @@ var Violine = {
 	/**
 	 * Processes a message 
 	 * @param {Postman} postman The Postman object that carries the message
-	 * @return {object} The answer, or an array of answers.
+	 * @return {Reply|Reply[]} The answer, or an array of answers.
 	 */
 	ProcessSentence: function(postman) {
-		let words = Interpreter.ShiftSentence(postman.message.content);
-		let cmdName = words.current;
-		let args = words.remaining;
-
-		let result = this.ProcessCommand(cmdName, args, postman);
-
-		if (result && isNaN(result))
-			postman.Complete(result);
-		// If no commands are triggered, hum to your name.
-		if (!result) {
-			words = Interpreter.SplitSentence(postman.message.content);
-			if (words.includes(Violine.mentions[0]) || words.includes(Violine.mentions[1]))
-				postman.Complete({ message: "♪" });
+		let start = 0;
+		while(Interpreter.IsWhitespace(postman.message.content[start]))
+			start++;
+		for(prefix of this.config.command_prefixes.concat(this.mentions)) {
+			if(postman.message.content.startsWith(prefix, start))
+			{
+				let words = Interpreter.ShiftSentence(postman.message.content);
+				let cmdName = words.current;
+				let args = words.remaining;
+		
+				let result = this.ProcessCommand(cmdName, args, postman);
+		
+				if (result) {
+					if (isNaN(result))
+						postman.Complete(result);
+					else
+						postman.Complete(Reply.Error(NULL, result))
+					return;
+				}
+			}
 		}
+
+		// If not a command, hum to your name.
+		if(postman.message.content.includes(this.mentions[0])
+		|| postman.message.content.includes(this.mentions[1])) 
+			postman.Complete("♪");
 	},
 
 	/**
@@ -68,9 +75,9 @@ var Violine = {
 
 	Init: function(){
 		try {
-			Violine.mentions = [
-				"<@"+Client.id+">",
-				"<@!"+Client.id+">"
+			this.mentions = [
+				"<@"+Client.user.id+">",
+				"<@!"+Client.user.id+">"
 			];
 	
 			this.ReloadAll();

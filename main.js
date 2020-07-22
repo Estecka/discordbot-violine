@@ -11,16 +11,16 @@ process.on("uncaughtException", function(err){
 // Adds the root path to the module listing
 module.paths.push("/");
 
-var Discord = require('discord.js');
+const Discord = require('discord.js');
 var auth    = require('./auth.json');
 
 // Initialize Discord Client
 var Client =
 global.Client = new Discord.Client();
 
-var Reply   = require("./Reply.js");
-var Postman = require("./Postman.js");
-var Violine = require('./violine.js');
+const Reply   = require("./Reply.js");
+const Postman = require("./Postman.js");
+const Violine = require('./violine.js');
 
 /**
  * Ships messages to the appropriate destination.
@@ -75,7 +75,7 @@ Client.on('ready', function () {
 
 // -- MESSSAGE --
 Client.on('message', function (msg) {
-	if (msg.author.id == Client.id) // Ignore own messages
+	if (msg.author.id == Client.user.id) // Ignore own messages
 		return;
 
 	let postman = new Postman(msg.content, msg.author.id, msg.channel.id);

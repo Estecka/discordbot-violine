@@ -3,7 +3,7 @@
 	"favColor" : 8930559,
 	"admins" : [ "124935323628077056" ],
 
-	"command_prefix" : ["v!"],
+	"command_prefixes" : ["v!"],
 
 	"mod_dir" : "./violine_commands_legacy/",
 	"import_modules" : []
