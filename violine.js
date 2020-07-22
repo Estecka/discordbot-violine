@@ -46,13 +46,13 @@ var Violine = {
 	 * @return {boolean} `true` if a command was found.
 	 */
 	RunShell: function(sentence, postman) {
-		let sudo = this.config.admins.includes(postman.message.author.id);
 		let args = Interpreter.ShiftSentence(sentence);
 		
 		for (let mod in this.modules)
 		for (let cmd in this.modules[mod])
 		if (cmd == args.current)
 		{
+			let sudo = this.config.admins.includes(postman.message.author.id);
 			if (!sudo && this.modules[mod][cmd]._isRoot) {
 				postman.Complete(Reply.forbidden);
 			}
@@ -61,13 +61,11 @@ var Violine = {
 					let r = this.modules[mod][cmd].main(args.remaining, postman);
 					if (r){
 						postman.Complete(r);
-						return true;
 					}
 				}
 				catch(e){
 					console.error(e);
 					postman.Complete(Reply.Error(null, "Command failed to execute"));
-					return true;
 				}
 			}
 			return true;

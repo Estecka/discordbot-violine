@@ -17,22 +17,4 @@ commands["v!color"] = {
 	}
 };
 
-
-
-commands["v!drill"] = {
-	_isLegacy: true,
-	help: ()=> "Simulates a given error message.",
-	Invoke: function(params) {
-		throw "Command no longer supported";
-		if (params.length<=0 && Reply[params[0]] == undefined)
-			return Reply.invalid;
-
-		else {
-			let r = Object.assign({}, Reply[params[0]]);
-			r.message = '♫';
-			return r;
-		}
-	}
-};
-
 module.exports = commands;

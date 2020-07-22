@@ -87,6 +87,8 @@ class Reply
 	 * @return {Reply}
 	 */
 	static Whisper(message){
+		console.warn("Whispers are annoying and no longer supported.");
+		return Reply.Say(message);
 		let reply = new Reply();
 		reply.embed = DefaultEmbed();
 		reply.embed.footer = {text: message};
@@ -127,50 +129,55 @@ class Reply
 	/// -------
 	/**
 	 * A generic, ready-to-use success notice
+	 * @type {Reply}
 	 */
 	static get success() {
 		return { 
 			embed: {
 				color: 0x00ff00,
-				footer: { text: "✔️ Success"}
+				description: "✔️ Success",
 			}
 		};
 	};
 	/**
 	 * A generic, ready-to-use error notice
+	 * @type {Reply}
 	 */
 	static get error() {
 		return {
 			embed: {
 				color: 0xff8822,
-				footer: { text: "️⚠️ Error"}
+				description: "️⚠️ Error",
 			}
 		};
 	}
 	/**
 	 * A generic, ready-to-use failure notice
+	 * @type {Reply}
 	 */
 	static get failure() {
 		return {
 			embed: {
 				color: 0xff0000,
-				footer: { text: "️❌ Failure"}
+				description: "️❌ Failure",
 			}
 		};
 	}
 	/**
 	 * A ready-to-use notice for invalid parameters.
+	 * @type {Reply}
 	 */
 	static get invalid() {
 		return {
 			embed: {
 				color: 0x2288ff,
-				footer: { text: "ℹ Invalid parameters" }
+				description: "ℹ Invalid parameters",
 			}
 		};
 	}
 	/**
 	 * A ready-to-use notice for Discord-issued errors
+	 * @type {Reply}
 	 */
 	static get socialError() {
 		return {
@@ -182,12 +189,13 @@ class Reply
 	}
 	/**
 	 * A generic, ready-to-use notice for forbidden notices.
+	 * @type {Reply}
 	 */
 	static get forbidden() {
 		return {
 			embed: {
 				color: 0xff8844,
-				footer: { text: "🚷 Forbidden" },
+				description: "🚷 Forbidden" ,
 			},
 		}
 	}
@@ -202,10 +210,10 @@ class Reply
 			embed: {
 				author: {
 					name: "<-author.icon_url | Author.name",
-					url: "author.url",
+					url: "http://author.url",
 					icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
 				},
-				url: "url",
+				url: "http://url.url",
 		
 				color: 0x8844ff,
 				title: "Title | thumbnail.url ->",
@@ -233,7 +241,7 @@ class Reply
 				],
 				timestamp: new Date(),
 				footer: {
-					text: "<-footer.icon_url | [footer.url](footer.text) | timestamp->",
+					text: "<-footer.icon_url | footer.text | timestamp->",
 					icon_url: "https://cdn.discordapp.com/embed/avatars/0.png"
 				}
 			}
