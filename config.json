@@ -9,5 +9,8 @@
 	"command_prefixes" : ["v!"],
 
 	"mod_dir" : "./violine_modules/",
-	"import_modules" : ["root"]
+	"import_modules" : [
+		"root", 
+		"miscellaneous"
+	]
 }
