@@ -149,6 +149,15 @@ class Reply
 		if (title)   reply.embed.title += " : " + title;
 		return reply;
 	}
+	static Success(title, message){
+		let reply = Reply.Say(message);
+		reply.embed.color = 0x00ff00;
+		reply.embed.title = "️️✅ Success";
+
+		if (message) reply.embed.description = message;
+		if (title)   reply.embed.title += " : " + title;
+		return reply;
+	}
 
 	
 	/// -------

@@ -23,11 +23,13 @@ const Violine = require('./violine.js');
 
 /**
  * Ships messages to the appropriate destination.
- * @param {Reply|Reply[]} messages A single or an Array of preformatted message objects
+ * @param {Reply|Reply[]|Promise<Reply>|Promise<Reply[]>} messages A single or an Array of preformatted message objects
  * @param {Discord.TextChannel|Discord.DMChannel|Discord.NewsChannel} channel The ID of the destination channel.
  * @param {boolean} silent if true, the message will not be logged.
  */
-function StampMessages (messages, channel, silent=false){
+async function StampMessages (messages, channel, silent=false){
+	if (messages instanceof Promise)
+		messages = await messages;
 	if (!Array.isArray(messages))
 		messages = [messages];
 
