@@ -16,17 +16,33 @@ var commands = {
 	drill: {
 		_isRoot: true,
 		main: function(args) {
-			let arg = Interpreter.ShiftSentence(args);
-			if (arg.current.length <= 0 || Reply[arg.current] == undefined)
-				return Reply.invalid;
-
-			else {
-				let r = Reply[arg.current];
-				r.content = '♫';
-				if (!r.embed.footer)
-					r.embed.footer = { text: "This is a drill." };
+			let argsArray = Interpreter.SplitSentence(args);
+			if (argsArray.length <= 0)
+			{
+				let r = Reply.invalid;
+				r.embed.footer = { text: "This is not a drill." };
 				return r;
 			}
+			
+			let result = [];
+			for (let arg of argsArray)
+			{
+				let r;
+				if (arg == "--void")
+					r = null;
+				else if (arg.length <= 0 || Reply[arg] == undefined){
+					r = Reply.invalid;
+					r.embed.footer = { text: "This is not a drill." };
+				}
+				else {
+					r = Reply[arg];
+					r.content = '♫';
+					if (!r.embed.footer)
+						r.embed.footer = { text: "This is a drill." };
+				}
+				result.push(r);
+			}
+			return result;
 		}
 	},
 };

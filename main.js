@@ -24,35 +24,30 @@ const Violine = require('./violine.js');
 
 /**
  * Ships messages to the appropriate destination.
- * @param {Reply|Reply[]} message A single or an Array of preformatted message objects
+ * @param {Reply|Reply[]} messages A single or an Array of preformatted message objects
  * @param {Discord.TextChannel|Discord.DMChannel|Discord.NewsChannel} channel The ID of the destination channel.
  * @param {boolean} silent if true, the message will not be logged.
  */
-function StampMessages (message, channel, silent=false){
-	let msg;
+function StampMessages (messages, channel, silent=false){
+	if (!Array.isArray(messages))
+		messages = [messages];
 
-	if (Array.isArray(message))
-		msg = message.shift();
-	else {
-		msg = message
-		message = [];
+	let promise = null;
+	for (let msg of messages)
+	{
+		console.log(msg);
+		if (!promise)
+			promise = channel.send(msg);
+		else
+			promise = promise.then(() => channel.send(msg));
 	}
 
-	if (!silent)
-		console.log(msg);
-
-	channel.send(msg)
-	.catch((err) =>{
+	promise.catch((err) => {
 		console.error(err);
-		channel.send(Reply.socialError).catch(console.error);
+		channel.send(Reply.socialError);
 	});
 
-	return;
-
-	Client.sendMessage(msg, function(error, response) {
-		if (message.length>0)
-			setTimeout(()=>StampMessages(message, channel, silent), 1000);
-	});
+	return promise;
 }
 
 
