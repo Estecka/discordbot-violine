@@ -27,7 +27,30 @@ var commands = {
 			return "♪~";
 		},
 	},
-	
+
+	maintenance:{
+		_isRoot: true,
+		main: function(args){
+			args = args.trim().toLowerCase();
+			switch (args) {
+				default:
+					return Reply.invalid;
+
+				case "0" :
+				case "false" :
+				case "off" :
+					Violine.SetMaintenance(false);
+					return Reply.Say("Maintenance mode disabled.");
+
+				case "1" :
+				case "true" :
+				case "on" :
+					Violine.SetMaintenance(true);
+					return Reply.Say("Maintenance mode enabled.")
+			}
+		},
+	},
+
 	drill: {
 		_isRoot: true,
 		main: function(args) {

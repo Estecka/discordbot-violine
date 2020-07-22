@@ -19,6 +19,17 @@ var Violine = {
 	 */
 	modules: {},
 
+	SetMaintenance: function(value){
+		this.config.maintenance_mode = value;
+		this.client.user.setPresence({
+			status: value ? "dnd" : "online",
+			activity : { 
+				name: value ? "In Maintenance" : this.config.status,
+				type: "PLAYING",
+			},
+		});
+	},
+
 	/**
 	 * Processes a message 
 	 * @param {Postman} postman The Postman object that carries the message
@@ -113,9 +124,7 @@ var Violine = {
 		}
 		delete prevConf;
 
-		this.client.user.setPresence({
-			activity : { name: this.config.game }
-		});
+		this.SetMaintenance(this.config.maintenance_mode);
 
 		for (var name in this.modules)
 			delete this.modules[name];

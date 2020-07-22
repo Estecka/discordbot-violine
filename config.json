@@ -1,9 +1,10 @@
 {
-	"game" : "♪♫ v!help",
+	"status" : "♪♫ v!help",
 	"favColor" : 8930559,
 	"birth-date": "2018-09-04",
 
 	"admins" : [ "124935323628077056" ],
+	"maintenance_mode" : true,
 
 	"command_prefixes" : ["v!"],
 

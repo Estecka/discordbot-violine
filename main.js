@@ -61,7 +61,12 @@ client.on('ready', function () {
 
 // -- MESSSAGE --
 client.on('message', function (msg) {
-	if (msg.author.id == client.user.id) // Ignore own messages
+	// Ignore own messages
+	if (msg.author.id == client.user.id)
+		return;
+
+	// Ignores everyone in maintenance mode
+	if (Violine.config.maintenance_mode && !Violine.config.admins.includes(msg.author.id))
 		return;
 
 	let postman = new Postman(msg);
