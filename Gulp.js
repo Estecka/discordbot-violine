@@ -19,7 +19,7 @@ class Gulp {
 	 * Extract the next argument (delimited by whitespaces).
 	 * @return {string?} The argument, trimmed of whitespaces. Null if there is no argument.
 	 */
-	ShiftArg(){
+	NextArg(){
 		let args = Gulp.ShiftSentence(this.remaining);
 		this.current = args.current ? args.current : null;
 		this.remaining = args.remaining ? args.current : null;
@@ -30,14 +30,15 @@ class Gulp {
 	 * Extracts the next positive decimal integer.
 	 * @return {number} The int value, or NaN if no int was found.
 	 */
-	ShiftInt(){
-		if (!IsDigit(this.remaining[0]))
+	NextInt(){
+		if (!Gulp.IsDigit(this.remaining[0]))
 			return Number.NaN;
 		
 		this.current = 0;
-		let i = 0;
-		while (i < this.remaining.length && Gulp.IsDigit(this.remaining[i]))
-			this.current = (10 * value) + (this.remaining[i] - '0');
+		let i;
+		for (i=0; i < this.remaining.length && Gulp.IsDigit(this.remaining[i]); i++){
+			this.current = (10 * this.current) + (this.remaining[i] - '0');
+		}
 
 		this.remaining = this.remaining.substr(i);
 
