@@ -1,6 +1,6 @@
 const Violine = require("../violine.js");
 const Reply = require("../Reply.js");
-const Interpreter = require("../Interpreter.js");
+const Gulp = require("../Gulp.js");
 
 function list(){
 	let guilds = Violine.client.guilds.cache;
@@ -22,7 +22,7 @@ function list(){
 };
 
 async function leave(sentence){
-	let args = Interpreter.ShiftSentence(sentence);
+	let args = Gulp.ShiftSentence(sentence);
 	if (args.remaining)
 		return Reply.invalid;
 	
@@ -46,7 +46,7 @@ var commands = {
 	server: {
 		_isRoot: true,
 		main(args){
-			let words = Interpreter.ShiftSentence(args);
+			let words = Gulp.ShiftSentence(args);
 			switch(words.current){
 				default:
 					return Reply.invalid;

@@ -1,4 +1,4 @@
-var Interpreter = require("./Interpreter.js");
+var Gulp = require("./Gulp.js");
 var Reply = require("./Reply.js");
 let Command = require("./Command.js");
 let Postman = require("./Postman.js");
@@ -39,7 +39,7 @@ class Nest
 				 */
 				let cmd = this._commands[name];
 				if (cmd._isLegacy){
-					args = Interpreter.SplitSentence(args);
+					args = Gulp.SplitSentence(args);
 					let reply = cmd.Invoke(args);
 					if (reply && isNaN(reply))
 						postman.Complete(reply);

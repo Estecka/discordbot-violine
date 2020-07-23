@@ -1,12 +1,12 @@
 const Violine = require("../violine.js");
-const Interpreter = require("../Interpreter.js");
+const Gulp = require("../Gulp.js");
 const Reply = require("../Reply.js");
 
 var commands = {
 	reload: {
 		_isRoot: true,
 		main: function(args){
-			let modules = Interpreter.SplitSentence(args);
+			let modules = Gulp.SplitSentence(args);
 			modules.tri
 			if (modules.length <= 0)
 				return Reply.invalid;

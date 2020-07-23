@@ -1,7 +1,7 @@
 const Reply  = require("./Reply.js");
 const Command = require("./Command.js");
 var Config = require("./config.json");
-const Interpreter = require("./Interpreter.js");
+const Gulp = require("./Gulp.js");
 const Postman = require("./Postman.js");
 const Discord = require("discord.js");
 
@@ -36,7 +36,7 @@ var Violine = {
 	 */
 	ProcessSentence: function(postman) {
 		let start = 0;
-		while(Interpreter.IsWhitespace(postman.message.content[start]))
+		while(Gulp.IsWhitespace(postman.message.content[start]))
 			start++;
 		
 		let prefixesArray = this.config.command_prefixes.concat(this.mentions)
@@ -63,7 +63,7 @@ var Violine = {
 	 * @return {boolean} `true` if a command was found.
 	 */
 	RunShell: function(sentence, postman) {
-		let args = Interpreter.ShiftSentence(sentence);
+		let args = Gulp.ShiftSentence(sentence);
 		
 		for (let mod in this.modules)
 		for (let cmd in this.modules[mod])

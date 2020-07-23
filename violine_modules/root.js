@@ -1,7 +1,7 @@
 const Violine = require("../violine");
 const Reply = require("../Reply");
 const Command = require("../Command");
-const Interpreter = require("../Interpreter.js");
+const Gulp = require("../Gulp.js");
 
 /**
  *  @type {Object<string, Command>}
@@ -54,7 +54,7 @@ var commands = {
 	drill: {
 		_isRoot: true,
 		main: function(args) {
-			let argsArray = Interpreter.SplitSentence(args);
+			let argsArray = Gulp.SplitSentence(args);
 			if (argsArray.length <= 0)
 			{
 				let r = Reply.invalid;

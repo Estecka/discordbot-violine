@@ -4,23 +4,22 @@
  * @property {string} remaining The remaining part of the sentence.
  */
 
-var Interpreter = 
-{
+class Gulp {
 	/**
 	 * Checks whether a given character is a whitespace
 	 * @param {character} char 
 	 * @returns {boolean} True if `char` is a whitespace
 	 */
-	IsWhitespace : function(char) {
+	static IsWhitespace  (char) {
 		return " \t\n\r\v\f".indexOf(char) >= 0;
-	},
+	}
 
 	/**
 	 * Gets the first word of a sentence, along with and the remaining string.
 	 * @param {string} sentence The full sentence.
 	 * @returns {ShiftedWord} 
 	 */
-	ShiftSentence: function(sentence){
+	static ShiftSentence (sentence){
 		let result = {};
 		let length = sentence.length;
 		let start = 0;
@@ -48,16 +47,16 @@ var Interpreter =
 		else
 			result.remaining = "";
 		return result;
-	},
+	}
 
 	/**
 	 * Separates a sentence into words at every whitespace.
 	 * @param {string} sentence 
 	 * @return {string[]} An array of words.
 	 */
-	SplitSentence: function(sentence){
+	static SplitSentence (sentence){
 		return sentence.match(/\S+/g) || [];
-	},
-};
+	}
+}
 
-module.exports = Interpreter;
+module.exports = Gulp;

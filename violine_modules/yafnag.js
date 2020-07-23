@@ -1,5 +1,5 @@
 const Reply = require("../Reply.js");
-const Interpreter = require("../Interpreter.js");
+const Gulp = require("../Gulp.js");
 const Violine = require("../violine.js");
 const xmlrpc = require("xmlrpc");
 const { DataResolver } = require("discord.js");
@@ -17,7 +17,7 @@ commands = {
 			+ "`v!Yafnag [sizeMin] [sizeMax] [amount]`",
 
 		main: function (sentence) {
-			let params = Interpreter.SplitSentence(sentence);
+			let params = Gulp.SplitSentence(sentence);
 			if (params[0] == "--help")
 				return Reply.Say("yafnag `sizeMin` `sizeMax` `amount`");
 
