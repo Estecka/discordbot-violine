@@ -207,7 +207,7 @@ class Reply
 		return {
 			embed: {
 				color: 0x2288ff,
-				description: "ℹ Invalid parameters",
+				description: "ℹ Invalid arguments",
 			}
 		};
 	}
