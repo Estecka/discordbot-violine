@@ -41,7 +41,10 @@ var Violine = {
 
 		let postman = new Postman(message);
 		postman.onSuccess = (reply) => {
-			console.log("> " + message.content);
+			console.log(
+				message.author.username+"#"+message.author.discriminator
+				+ "> " + message.content
+			);
 			ShipReplies(reply, message.channel);
 			console.log('');
 		}

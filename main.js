@@ -19,7 +19,7 @@ const Violine = require('./violine.js');
 // -- READY --
 client.on('ready', function () {
 	console.log("Connected");
-	console.log("Logged in as : "  +client.user.username +" ("+client.user.id+")");
+	console.log("Logged in as : "  +client.user.username+"#"+client.user.discriminator +" ("+client.user.id+")");
 
 	Violine.Init(client);
 });
