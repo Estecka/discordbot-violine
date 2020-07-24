@@ -32,13 +32,24 @@ var Violine = {
 
 	/**
 	 * Processes a message 
-	 * @param {Postman} postman The Postman object that carries the message
+	 * @param {Discord.Message} message The Postman object that carries the message
 	 */
-	ProcessSentence: function(postman) {
+	ProcessMessage: function(message) {
+		// Ignores everyone when in maintenance mode
+		if (this.config.maintenance_mode && !this.config.admins.includes(message.author.id))
+			return;
+
+		let postman = new Postman(message);
+		postman.onSuccess = (reply) => {
+			console.log("> " + message.content);
+			ShipReplies(reply, message.channel);
+			console.log('');
+		}
+
 		let start = 0;
 		while(Gulp.IsWhitespace(postman.message.content[start]))
 			start++;
-		
+
 		let prefixesArray = this.config.command_prefixes.concat(this.mentions)
 		for(prefix of prefixesArray) {
 			if(postman.message.content.startsWith(prefix, start))
@@ -155,36 +166,32 @@ var Violine = {
 	},
 };
 
-// --------------
-// Legacy methods
-// --------------
+/**
+ * Ships one or several replies to the appropriate destination.
+ * @param {Reply|Reply[]|Promise<Reply>|Promise<Reply[]>} replies A single or an Array of preformatted message objects
+ * @param {Discord.TextChannel|Discord.DMChannel|Discord.NewsChannel} channel The ID of the destination channel.
+ */
+async function ShipReplies (replies, channel){
+	if (replies instanceof Promise)
+		replies = await replies;
+	if (!Array.isArray(replies))
+		replies = [replies];
 
-Violine.Send = function(messages, channel){
-	console.warn("Violine.Send() is deprecated.\n");
-	return;
-	if (!Array.isArray(messages))
-		messages = [messages];
-	let msg = messages.shift();
-	if (channel)
-		msg.to = channel;
+	let promise = null;
+	for (let msg of replies)
+	{
+		console.log(msg);
+		if (!promise)
+			promise = channel.send(msg);
+		else
+			promise = promise.then(() => channel.send(msg));
+	}
 
-	Client.sendMessage(msg, (error, response)=>{
-		if (messages.length>0)
-			setTimeout(()=>Violine.Send(messages, channel), 1000);
-		if (error){
-			console.warn("Message caused an error : ");
-			console.warn(msg);
-			console.warn(error);
-			Client.sendMessage({
-				to: msg.to,
-				embed: {
-					color: 0xff8800,
-					description: "⛔ A message was refused by Discord"
-				}
-			})
-		}
-	})
-};
+	promise.catch((err) => {
+		console.error(err);
+		channel.send(Reply.socialError);
+	});
+}
 
 global.Violine = Violine;
 module.exports = Violine;
