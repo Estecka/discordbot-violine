@@ -1,6 +1,7 @@
 const Violine = require("../violine.js");
 const Reply = require("../Reply.js");
 const Gulp = require("../Gulp.js");
+const Discord = require("discord.js");
 
 function listGuilds(){
 	let guilds = Violine.client.guilds.cache;
@@ -60,6 +61,25 @@ async function leave(sentence){
 	return r;
 };
 
+async function send(channelId, message){
+	let channel = Violine.client.channels.resolve(channelId);
+	if (!channel)
+		return Reply.Error(channelId, "Unknown channel.");
+	if (!(channel instanceof Discord.TextChannel))
+		return Reply.Failure(channelId, "Not a text channel.")
+	
+	/**
+	 * @var {Discord.TextChannel} channel
+	 */
+	let reply;
+	await channel.send(message)
+	.then(
+		() => {reply = Reply.success},
+		() => {reply = Reply.failure},
+	);
+	return reply;
+};
+
 var commands = {
 	server: {
 		_isRoot: true,
@@ -79,6 +99,11 @@ var commands = {
 				case "chan":
 				case "channels":
 					return listChannels(words.remaining);
+				
+				case "send":
+				case "post":
+					words = Gulp.ShiftSentence(words.remaining);
+					return send(words.current, words.remaining);
 			}
 		},
 	},
