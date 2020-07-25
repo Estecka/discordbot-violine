@@ -2,15 +2,14 @@ const Violine = require("../violine.js");
 const Reply = require("../Reply.js");
 const Gulp = require("../Gulp.js");
 
-function list(){
+function listGuilds(){
 	let guilds = Violine.client.guilds.cache;
 	let r = Reply.Title(
 		"Servers : ",
 		guilds.size + " servers.",
 	);
 
-	for (let [id, g] of guilds)
-	{
+	for (let [id, g] of guilds) {
 		r.AddField(
 			g.name,
 			id,
@@ -18,6 +17,25 @@ function list(){
 		);
 	}
 
+	return r;
+};
+
+function listChannels(serverId){
+	let guild = Violine.client.guilds.resolve(serverId);
+	if (!guild)
+		return Reply.Error(serverId, "Unknown server.")
+
+	let r = Reply.Title(
+		"🖧 Server : " + guild.name, 
+		guild.channels.cache.size + " channels."
+	);
+	for (let [id, chan] of guild.channels.cache)	{
+		r.AddField(
+			"#" + chan.name,
+			id,
+			true
+		);
+	}
 	return r;
 };
 
@@ -53,10 +71,14 @@ var commands = {
 
 				case "" :
 				case "list" :
-					return list();
+					return listGuilds();
 			
 				case "leave":
 					return leave(words.remaining);
+				
+				case "chan":
+				case "channels":
+					return listChannels(words.remaining);
 			}
 		},
 	},
