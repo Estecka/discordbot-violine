@@ -36,17 +36,19 @@ var commands = {
 				default:
 					return Reply.invalid;
 
+				case "" :
+					return Reply.Say("Maintenance is currently " + (Violine.config.maintenance_mode ? "**ON**" : "**OFF**"));
 				case "0" :
 				case "false" :
 				case "off" :
 					Violine.SetMaintenance(false);
-					return Reply.Say("Maintenance mode disabled.");
+					return Reply.Say("Maintenance has been disabled.");
 
 				case "1" :
 				case "true" :
 				case "on" :
 					Violine.SetMaintenance(true);
-					return Reply.Say("Maintenance mode enabled.")
+					return Reply.Say("Maintenance has been enabled.")
 			}
 		},
 	},
