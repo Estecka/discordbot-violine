@@ -20,7 +20,7 @@ var commands = {
 			setTimeout(
 				function(){
 					Violine.client.destroy();
-					process.exit();
+					// process.exit();
 				},
 				500
 			);
