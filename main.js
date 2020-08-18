@@ -14,6 +14,10 @@ var auth = require('./auth.json');
 // Get token from environnement variables if applicable.
 if (process.env.token != undefined)
 	auth.token = process.env.token;
+if (process.env.PORT !== undefined)
+	app.listen(process.env.PORT, ()=>{
+		return "Violine is running."
+	});
 
 // Initialize Discord Client
 var client = new Discord.Client();
