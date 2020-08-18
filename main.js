@@ -2,7 +2,7 @@
 process.on("uncaughtException", function(err){
 	console.log("\n/!\\ FATAL ERROR /!\\\n");
 	console.log(err);
-	setTimeout(()=>{}, 300000);
+	setTimeout(()=>{process.exit()}, 300000);
 });
 
 // Adds the root path to the module listing
