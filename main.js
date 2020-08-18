@@ -8,16 +8,24 @@ process.on("uncaughtException", function(err){
 // Adds the root path to the module listing
 module.paths.push("/");
 
+
+const http = require('http');
 const Discord = require('discord.js');
 var auth = require('./auth.json');
 
 // Get token from environnement variables if applicable.
 if (process.env.token != undefined)
 	auth.token = process.env.token;
-if (process.env.PORT !== undefined)
-	app.listen(process.env.PORT, ()=>{
-		return "Violine is running."
+// Listen to http port if required.
+if (process.env.PORT !== undefined){
+	let server = http.createServer((req, res) => {
+		res.writeHead(200, {'Content-Type': 'text/plain'});
+		res.write("Violine is online.");
+		res.end();
 	});
+	server.listen(process.env.PORT);
+}
+
 
 // Initialize Discord Client
 var client = new Discord.Client();
