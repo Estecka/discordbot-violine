@@ -11,6 +11,10 @@ module.paths.push("/");
 const Discord = require('discord.js');
 var auth = require('./auth.json');
 
+// Get token from environnement variables if applicable.
+if (process.env.token != undefined)
+	auth.token = process.env.token;
+
 // Initialize Discord Client
 var client = new Discord.Client();
 
